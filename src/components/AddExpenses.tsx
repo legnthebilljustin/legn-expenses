@@ -1,26 +1,28 @@
 import { Button, CalendarDate, DatePicker } from "@nextui-org/react"
 import ExpensesInputGroup from "./ExpensesInputGroup"
-import { ChangeEvent, useCallback, useState } from "react"
-
-type AddExpensesProps = {
-
-}
+import { ChangeEvent, useCallback, useMemo, useState } from "react"
+import { addExpenses } from "../apis/expenses"
 
 export type ExpensesInputGroupType = {
     price: number | string
     itemName: string
+    purchaseDate: Date | null
 }
 
-export default function AddExpenses({ }: AddExpensesProps) {
+export default function AddExpenses() {
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
-    const [formData, setFormData] = useState<ExpensesInputGroupType[]>([
-        { price: 0, itemName: "" }
-    ])
+    const [formData, setFormData] = useState<ExpensesInputGroupType[]>([])
+
+    const parsedPurchaseDate: Date | null = useMemo(() => {
+        if (purchaseDate !== null) {
+            const { year, month, day } = purchaseDate
+            return new Date(year, month - 1, day)
+        }
+        return null
+    }, [purchaseDate])
 
     const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target
-        console.log(name, value)
-        console.log(formData[index])
         const updatedFormData = [...formData]
 
         updatedFormData[index] = {
@@ -32,7 +34,11 @@ export default function AddExpenses({ }: AddExpensesProps) {
     }, [formData])
 
     const addFormDataItem = () => {
-        const newExpensesItem: ExpensesInputGroupType = { price: 0, itemName: "" }
+        const newExpensesItem: ExpensesInputGroupType = { 
+            price: 0, 
+            itemName: "",
+            purchaseDate: parsedPurchaseDate
+        }
         setFormData(prevFormData => [...prevFormData, newExpensesItem])
     }
 
@@ -40,12 +46,13 @@ export default function AddExpenses({ }: AddExpensesProps) {
         setPurchaseDate(date)
     }
 
-    const handleSubmit = () => {
-        console.log(purchaseDate, formData)
+    const handleSubmit = async() => {
+        addExpenses(formData)
     }
 
     return (
         <div>
+            <div className="mb-2 mt-6">Please select a date to start adding items.</div>
             <DatePicker label="Purchase Date" size="sm"
                 className="max-w-[300px] mb-8"
                 isRequired name="purchaseDate"
@@ -59,7 +66,7 @@ export default function AddExpenses({ }: AddExpensesProps) {
                     onClick={handleSubmit}
                 >Save Item</Button>
                 <Button color="default" size="sm" startContent={<i className='bx bxs-cart-add' />}
-                    onClick={addFormDataItem}
+                    onClick={addFormDataItem} isDisabled={purchaseDate === null}
                 >
                     Add New Item
                 </Button>
