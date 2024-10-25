@@ -15,7 +15,7 @@ export default function ExpensesInputGroup({ index, item, onChange }: Props) {
                 className="max-w-[100px] mr-2"
                 name="price"
                 placeholder="0"
-                value={item.price}
+                value={item.price.toString()}
                 onChange={(event) => onChange(event, index)}
                 isRequired
             />
