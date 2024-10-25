@@ -11,7 +11,7 @@ const collectionName = {
 export const addExpenses = async(formData: ExpensesInputGroupType[]) => {
     return firestoreHandler(async() => {
         const batch = writeBatch(db)
-        const collectionRef = collection(db, collectionName.DEVELOPMENT)
+        const collectionRef = collection(db, collectionName.PRODUCTION)
 
         formData.forEach(item => {
             const docRef = doc(collectionRef)
