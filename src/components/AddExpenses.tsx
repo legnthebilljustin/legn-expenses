@@ -2,7 +2,8 @@ import { Button, CalendarDate, DatePicker } from "@nextui-org/react"
 import ExpensesInputGroup from "./ExpensesInputGroup"
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { addExpenses } from "../apis/expenses"
-import NotificationModal from "./NotificationModal"
+import { useDispatch } from "react-redux"
+import { openNotification, setNotificationMessage } from "../state/notificationSlice"
 
 export type ExpensesInputGroupType = {
     price: number | string
@@ -13,9 +14,7 @@ export type ExpensesInputGroupType = {
 export default function AddExpenses() {
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
     const [formData, setFormData] = useState<ExpensesInputGroupType[]>([])
-    const [notification, setNotification] = useState({
-        message: "", isOpen: false
-    })
+    const dispatch = useDispatch()
 
     const parsedPurchaseDate: Date | null = useMemo(() => {
         if (purchaseDate !== null) {
@@ -51,9 +50,11 @@ export default function AddExpenses() {
     }
 
     const handleSubmit = async() => {
-        const response = await addExpenses(formData)
         
-        setNotification({ isOpen: true, message: response.data || "" })
+        const response = await addExpenses(formData)
+        dispatch(setNotificationMessage(response.data || "Success!"))
+        dispatch(openNotification())
+        
         if (!response.success) {
             return false
         }
@@ -83,8 +84,7 @@ export default function AddExpenses() {
                     Add New Item
                 </Button>
             </div>
-            
-            <NotificationModal message={notification.message} isOpen={notification.isOpen} />
+        
         </div>
     )
 }

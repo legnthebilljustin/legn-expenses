@@ -1,26 +1,29 @@
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react"
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
+import { useDispatch, useSelector } from "react-redux"
+import { closeNotification } from "../state/notificationSlice"
 
-type Props = {
-    message: string
-    isOpen: boolean
-}
+export default function NotificationModal() {
+    const dispatch = useDispatch()
+    const { isOpen, message } = useSelector((state: any) => state.notification)
 
-export default function NotificationModal({ isOpen, message }: Props) {
-    const { onClose } = useDisclosure()
+    const handleNotificationClose = () => {
+        dispatch(closeNotification())
+    }
 
     return (
-        <Modal backdrop="blur" size="xs" isOpen={isOpen} onClose={onClose}
+        <Modal backdrop="blur" size="xs"
+            isOpen={isOpen} onClose={() => handleNotificationClose()}
             placement="top-center"
         >
             <ModalContent>
-                {(onClose) => (
+                {() => (
                     <>
                         <ModalHeader>Notification!</ModalHeader>
                         <ModalBody>
                             <p>{ message }</p>
                         </ModalBody>
                         <ModalFooter>
-                            <Button size="sm" color="primary" onPress={onClose}>
+                            <Button size="sm" color="primary" onPress={() => handleNotificationClose()}>
                                 Close
                             </Button>
                         </ModalFooter>
