@@ -27,7 +27,7 @@ export const addExpenses = async(formData: ExpensesInputGroupType[]) => {
 export const getTExpenses = async() => {
     
     try {
-        const querySnapshot = await getDocs(collection(db, collectionName.DEVELOPMENT))
+        const querySnapshot = await getDocs(collection(db, collectionName.PRODUCTION))
         return querySnapshot
     } catch (error) {
         console.error("unable to fetch expenses")
