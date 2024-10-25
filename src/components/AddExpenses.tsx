@@ -2,6 +2,7 @@ import { Button, CalendarDate, DatePicker } from "@nextui-org/react"
 import ExpensesInputGroup from "./ExpensesInputGroup"
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { addExpenses } from "../apis/expenses"
+import NotificationModal from "./NotificationModal"
 
 export type ExpensesInputGroupType = {
     price: number | string
@@ -12,6 +13,9 @@ export type ExpensesInputGroupType = {
 export default function AddExpenses() {
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
     const [formData, setFormData] = useState<ExpensesInputGroupType[]>([])
+    const [notification, setNotification] = useState({
+        message: "", isOpen: false
+    })
 
     const parsedPurchaseDate: Date | null = useMemo(() => {
         if (purchaseDate !== null) {
@@ -47,7 +51,14 @@ export default function AddExpenses() {
     }
 
     const handleSubmit = async() => {
-        addExpenses(formData)
+        const response = await addExpenses(formData)
+        
+        setNotification({ isOpen: true, message: response.data || "" })
+        if (!response.success) {
+            return false
+        }
+        setFormData([])
+        setPurchaseDate(null)
     }
 
     return (
@@ -63,6 +74,7 @@ export default function AddExpenses() {
 
             <div className="mt-8 mb-4">
                 <Button color="primary" size="sm" className="mr-2"
+                    startContent={<i className='bx bxs-save'></i>}
                     onClick={handleSubmit}
                 >Save Item</Button>
                 <Button color="default" size="sm" startContent={<i className='bx bxs-cart-add' />}
@@ -72,6 +84,7 @@ export default function AddExpenses() {
                 </Button>
             </div>
             
+            <NotificationModal message={notification.message} isOpen={notification.isOpen} />
         </div>
     )
 }

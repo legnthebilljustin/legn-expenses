@@ -1,29 +1,33 @@
 import { collection, doc, getDocs, writeBatch } from "firebase/firestore/lite"
 import db from "../firebase/config"
 import { ExpensesInputGroupType } from "../components/AddExpenses"
+import { firestoreHandler } from "../firebase/firestoreService"
 
-const collectionName = "expenses"
+const collectionName = {
+    PRODUCTION: "expenses",
+    DEVELOPMENT: "expenses_testing"
+}
 
 export const addExpenses = async(formData: ExpensesInputGroupType[]) => {
-    const batch = writeBatch(db)
-    const collectionRef = collection(db, collectionName)
+    return firestoreHandler(async() => {
+        const batch = writeBatch(db)
+        const collectionRef = collection(db, collectionName.DEVELOPMENT)
 
-    try {
         formData.forEach(item => {
             const docRef = doc(collectionRef)
             batch.set(docRef, item)    
         });
 
         await batch.commit()
-        console.log("All expenses have been saved.")
-    } catch (error) {
-        console.error("something went wrong")
-    }
+
+        return "Expenses items list saved."
+    })
 }
 
 export const getTExpenses = async() => {
+    
     try {
-        const querySnapshot = await getDocs(collection(db, collectionName))
+        const querySnapshot = await getDocs(collection(db, collectionName.DEVELOPMENT))
         return querySnapshot
     } catch (error) {
         console.error("unable to fetch expenses")
