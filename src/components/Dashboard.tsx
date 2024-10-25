@@ -33,7 +33,6 @@ export default function Dashboard() {
 
             setTransasctions(expenses)
             setIsLoading(false)
-            console.log(expenses)
         }
 
         query()

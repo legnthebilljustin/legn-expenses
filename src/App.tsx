@@ -1,26 +1,21 @@
 import { useState } from "react"
 import AddExpenses from "./components/AddExpenses"
 import Dashboard from "./components/Dashboard"
-import Navigation from "./components/Navigation"
-
-const ScreensEnums = {
-	DASHBOARD: "Dashboard",
-	ADD_EXPENSES: "AddExpenses"
-}
-
-const Screens = {
-	[ScreensEnums.DASHBOARD]: Dashboard,
-	[ScreensEnums.ADD_EXPENSES]: AddExpenses
-}
+import Navigation, { NavigationItem } from "./components/Navigation"
+import { SCREENS } from "./constants/screens"
 
 function App() {
-	const [screen, setScreen] = useState(ScreensEnums.DASHBOARD)
+	const [screen, setScreen] = useState(SCREENS.DASHBOARD)
+
+	const handleNavSelection = (nav: NavigationItem) => {
+		setScreen(nav)
+	}
 
 	return (
 		<>
-			<Navigation />
-			{/* {screen === ScreensEnums.DASHBOARD && <Dashboard />}
-			{screen === ScreensEnums.ADD_EXPENSES && <AddExpenses />} */}
+			<Navigation handleNavSelection={handleNavSelection} />
+			{screen === SCREENS.DASHBOARD && <Dashboard />}
+			{screen === SCREENS.ADD_EXPENSES && <AddExpenses />}
 		</>
 	)
 }

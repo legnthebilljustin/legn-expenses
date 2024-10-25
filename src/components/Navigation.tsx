@@ -1,17 +1,23 @@
 import { Button } from "@nextui-org/react"
 import { useState } from "react"
+import { SCREENS } from "../constants/screens"
 
 const navigationItems = [
-    "Dashboard", "Add Expenses"
+    SCREENS.DASHBOARD, SCREENS.ADD_EXPENSES
 ] as const
 
-type NavigationItem = typeof navigationItems[number]
+export type NavigationItem = typeof navigationItems[number]
 
-export default function Navigation() {
+type Props = {
+    handleNavSelection: (data: NavigationItem) => void
+}
+
+export default function Navigation({ handleNavSelection }: Props) {
     const [selected, setSelected] = useState<NavigationItem>()
 
     const selectNav = (selectedNav: NavigationItem) => {
         setSelected(selectedNav)
+        handleNavSelection(selectedNav)
     }
 
     return (
