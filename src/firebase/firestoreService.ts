@@ -1,10 +1,11 @@
 import { FirestoreError } from "firebase/firestore/lite"
 
-interface FirestoreResponse<T = any> {
+export interface FirestoreResponse<T = any> {
     success: boolean
     data?: T
     error?: string
     errorCode?: number
+    message?: string
 }
 
 export const firestoreHandler = async <T>(callback: () => Promise<T>): Promise<FirestoreResponse<T>> => {

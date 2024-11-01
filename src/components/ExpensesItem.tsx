@@ -1,5 +1,6 @@
 import { Card, CardBody } from "@nextui-org/react"
 import { ExpensesItemType } from "./Dashboard"
+import { convertToCurrency } from "../utils/currency"
 
 type Props = {
     item: ExpensesItemType
@@ -17,7 +18,7 @@ export default function ExpensesItem({ item }: Props) {
                         </div>
                     </div>
                     <div className="w-1/3 text-right">
-                        - P{item.price}
+                        - P{convertToCurrency(item.price)}
                     </div>
                 </div>
             </CardBody>

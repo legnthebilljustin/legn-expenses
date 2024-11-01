@@ -4,9 +4,10 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { addExpenses } from "../apis/expenses"
 import { useDispatch } from "react-redux"
 import { openNotification, setNotificationMessage } from "../state/notificationSlice"
+import { findAndUpdateExpensesOverview, UpdateExpensesOverviewFields } from "../apis/overview"
 
 export type ExpensesInputGroupType = {
-    price: number | string
+    price: number
     itemName: string
     purchaseDate: Date | null
 }
@@ -26,11 +27,19 @@ export default function AddExpenses() {
 
     const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target
+        if (name === undefined || value === undefined) {
+            throw new Error("Input element is missing a `name` or a `value` attribute.")
+        }
+
+        if (value === "") {
+            throw new Error("Cannot have an empty value.")
+        }
+
         const updatedFormData = [...formData]
 
         updatedFormData[index] = {
             ...updatedFormData[index],
-            [name]: value
+            [name]: name === "price" ? parseFloat(value) : value
         }
 
         setFormData(updatedFormData)
@@ -50,14 +59,24 @@ export default function AddExpenses() {
     }
 
     const handleSubmit = async() => {
+        const { data, message, success, error } = await addExpenses(formData)
         
-        const response = await addExpenses(formData)
-        dispatch(setNotificationMessage(response.data || "Success!"))
+        if (!success) {
+            return error
+        }
+        console.log(data)
+        if (data?.data) {
+            const overviewUpdateData = {
+                amount: data.data.amount,
+                transactions: data.data.transactions
+            } as UpdateExpensesOverviewFields
+
+            await findAndUpdateExpensesOverview(overviewUpdateData)
+        }
+
+        dispatch(setNotificationMessage(message || "Success!"))
         dispatch(openNotification())
         
-        if (!response.success) {
-            return false
-        }
         setFormData([])
         setPurchaseDate(null)
     }
