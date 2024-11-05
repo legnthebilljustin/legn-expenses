@@ -64,7 +64,7 @@ export default function AddExpenses() {
         if (!success) {
             return error
         }
-        console.log(data)
+
         if (data?.data) {
             const overviewUpdateData = {
                 amount: data.data.amount,
@@ -96,6 +96,7 @@ export default function AddExpenses() {
                 <Button color="primary" size="sm" className="mr-2"
                     startContent={<i className='bx bxs-save'></i>}
                     onClick={handleSubmit}
+                    isDisabled={formData.length === 0}
                 >Save Item</Button>
                 <Button color="default" size="sm" startContent={<i className='bx bxs-cart-add' />}
                     onClick={addFormDataItem} isDisabled={purchaseDate === null}
