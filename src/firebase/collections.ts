@@ -3,11 +3,13 @@ type Environment = "development" | "production"
 export const COLLECTIONS = {
     production: {
         EXPENSES: "expenses",
-        OVERVIEW: "overview"
+        OVERVIEW: "overview",
+        CARDS: "cards"
     },
     development: {
         EXPENSES: "expenses_testing",
-        OVERVIEW: "overview_testing"
+        OVERVIEW: "overview_testing",
+        CARDS: "cards"
     }
 }
 

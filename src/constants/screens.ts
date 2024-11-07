@@ -1,4 +1,5 @@
 export const SCREENS = {
     DASHBOARD: "Dashboard",
-	ADD_EXPENSES: "AddExpenses"
+	ADD_EXPENSES: "AddExpenses",
+    CARDS: "Cards"
 }

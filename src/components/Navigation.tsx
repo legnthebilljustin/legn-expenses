@@ -3,7 +3,7 @@ import { useState } from "react"
 import { SCREENS } from "../constants/screens"
 
 const navigationItems = [
-    SCREENS.DASHBOARD, SCREENS.ADD_EXPENSES
+    SCREENS.DASHBOARD, SCREENS.ADD_EXPENSES, SCREENS.CARDS
 ] as const
 
 export type NavigationItem = typeof navigationItems[number]
