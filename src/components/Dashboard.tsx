@@ -5,6 +5,7 @@ import { Button, Spinner } from "@nextui-org/react";
 import { useDispatch } from "react-redux";
 import { openNotification, setNotificationMessage } from "../state/notificationSlice";
 import { DocumentSnapshot } from "firebase/firestore/lite";
+import { migrateMonthlyExpenses } from "../apis/overview";
 
 export type ExpensesItemType = {
     id: string
@@ -99,6 +100,7 @@ export default function Dashboard() {
     return (
         <>
             <div className="max-w-[600px]">
+                <Button color="primary" onClick={() => migrateMonthlyExpenses()}>Migrate October Expenses</Button>
                 <div className="font-bold mb-3">TRANSACTIONS</div>
                 {transactions?.map((item: any) => <ExpensesItem key={item.id} item={item as ExpensesItemType} />)}
                 

@@ -4,12 +4,14 @@ export const COLLECTIONS = {
     production: {
         EXPENSES: "expenses",
         OVERVIEW: "overview",
-        CARDS: "cards"
+        CARDS: "cards",
+        USERS: "users"
     },
     development: {
         EXPENSES: "expenses_testing",
         OVERVIEW: "overview_testing",
-        CARDS: "cards"
+        CARDS: "cards",
+        USERS: "users"
     }
 }
 

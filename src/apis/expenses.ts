@@ -8,7 +8,7 @@ import { UpdateExpensesOverviewFields } from "./overview"
 const EXPENSES_LIMIT = 15
 
 export const addExpenses = async(formData: ExpensesInputGroupType[]): Promise<FirestoreResponse<{
-    data: UpdateExpensesOverviewFields,
+    data: UpdateExpensesOverviewFields
     message: string
     success: boolean
 }>> => {
