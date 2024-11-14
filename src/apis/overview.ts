@@ -79,7 +79,6 @@ const createUsersSubCollectionAndTotal = async(
     expensesSnapshot: QuerySnapshot, 
     userId: string
 ) => {
-
     const batch = writeBatch(db)
 
     let totalAmount = 0
@@ -91,7 +90,7 @@ const createUsersSubCollectionAndTotal = async(
         totalAmount += expenseData.price
         totalTransactions += 1
 
-        const userExpensesRef = doc(db, `users/${userId}/awdsa/${collections.EXPENSES}/2024/10/${expenseDoc.id}`)
+        const userExpensesRef = doc(db, `users/${userId}/${collections.EXPENSES}/2024/10/${expenseDoc.id}`)
         
         batch.set(userExpensesRef, expenseData)
 
@@ -108,15 +107,15 @@ const createUsersSubCollectionAndTotal = async(
 }
 
 const getMonthAndYearExpenses = async(month: number, year: number): Promise<QuerySnapshot> => {
+    
     const startDate = new Date(year, month - 1, 1)
     const endDate = new Date(year, month, 0)
-    const expensesRef = collection(db, "awdasa")
+    const expensesRef = collection(db, collections.EXPENSES)
     const monthQuery = query(
         expensesRef,
         where("purchaseDate", ">=", startDate),
-        where("purchaseDate", "<", endDate)
+        where("purchaseDate", "<=", endDate)
     )
-
     const querySnapshot = await getDocs(monthQuery)
 
     return querySnapshot
