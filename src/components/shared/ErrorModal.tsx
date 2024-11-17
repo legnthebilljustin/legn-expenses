@@ -1,13 +1,11 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
-import { closeErrorModal, ErrorPayloadType, ErrorState } from "../../state/errorSlice";
-import { useState } from "react";
+import { closeErrorModal } from "../../state/errorSlice";
 import { RootState } from "../../state/store";
 
 export default function ErrorModal() {
     const dispatch = useDispatch()
     const { isOpen, message, code } = useSelector((state: RootState) => state.error)
-    const [errorHeading, setErrorHeading] = useState("")
 
     const handleCloseErrorModal = () => dispatch(closeErrorModal())
 
