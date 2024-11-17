@@ -1,13 +1,13 @@
 import { collection, doc, DocumentSnapshot, getDocs, limit, orderBy, query, startAfter, writeBatch } from "firebase/firestore/lite"
 import db from "../firebase/config"
-import { ExpensesInputGroupType } from "../components/AddExpenses"
 import { firestoreHandler, FirestoreResponse } from "../firebase/firestoreService"
 import collections from "../firebase/collections"
 import { UpdateExpensesOverviewFields } from "./overview"
+import { ExpensesFormInputGroupType } from "../types/expenses"
 
 const EXPENSES_LIMIT = 15
 
-export const addExpenses = async(formData: ExpensesInputGroupType[]): Promise<FirestoreResponse<{
+export const addExpenses = async(formData: ExpensesFormInputGroupType[]): Promise<FirestoreResponse<{
     data: UpdateExpensesOverviewFields
     message: string
     success: boolean

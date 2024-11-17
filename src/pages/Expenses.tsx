@@ -1,20 +1,15 @@
 import { Button, CalendarDate, DatePicker } from "@nextui-org/react"
-import ExpensesInputGroup from "./ExpensesInputGroup"
+import ExpensesInputGroup from "../components/expenses/ExpensesInputGroup"
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { addExpenses } from "../apis/expenses"
 import { useDispatch } from "react-redux"
 import { openNotification, setNotificationMessage } from "../state/notificationSlice"
 import { findAndUpdateExpensesOverview, UpdateExpensesOverviewFields } from "../apis/overview"
-
-export type ExpensesInputGroupType = {
-    price: number
-    itemName: string
-    purchaseDate: Date | null
-}
+import { ExpensesFormInputGroupType } from "../types/expenses"
 
 export default function AddExpenses() {
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
-    const [formData, setFormData] = useState<ExpensesInputGroupType[]>([])
+    const [formData, setFormData] = useState<ExpensesFormInputGroupType[]>([])
     const dispatch = useDispatch()
 
     const parsedPurchaseDate: Date | null = useMemo(() => {
@@ -46,7 +41,7 @@ export default function AddExpenses() {
     }, [formData])
 
     const addFormDataItem = () => {
-        const newExpensesItem: ExpensesInputGroupType = { 
+        const newExpensesItem: ExpensesFormInputGroupType = { 
             price: 0, 
             itemName: "",
             purchaseDate: parsedPurchaseDate

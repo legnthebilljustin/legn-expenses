@@ -1,10 +1,8 @@
 import { useState } from "react"
-import AddExpenses from "./components/AddExpenses"
-import Dashboard from "./components/Dashboard"
 import Navigation, { NavigationItem } from "./components/Navigation"
 import { SCREENS } from "./constants/screens"
 import NotificationModal from "./components/NotificationModal"
-import Cards from "./components/Cards"
+import { Dashboard, Cards, Expenses } from "./pages"
 
 function App() {
 	const [screen, setScreen] = useState(SCREENS.DASHBOARD)
@@ -17,7 +15,7 @@ function App() {
 		<>
 			<Navigation handleNavSelection={handleNavSelection} />
 			{screen === SCREENS.DASHBOARD && <Dashboard />}
-			{screen === SCREENS.ADD_EXPENSES && <AddExpenses />}
+			{screen === SCREENS.EXPENSES && <Expenses />}
 			{screen === SCREENS.CARDS && <Cards />}
 			<NotificationModal />
 		</>
