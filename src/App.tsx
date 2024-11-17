@@ -3,6 +3,7 @@ import Navigation, { NavigationItem } from "./components/Navigation"
 import { SCREENS } from "./constants/screens"
 import NotificationModal from "./components/NotificationModal"
 import { Dashboard, Cards, Expenses } from "./pages"
+import ErrorModal from "./components/shared/ErrorModal"
 
 function App() {
 	const [screen, setScreen] = useState(SCREENS.DASHBOARD)
@@ -18,6 +19,7 @@ function App() {
 			{screen === SCREENS.EXPENSES && <Expenses />}
 			{screen === SCREENS.CARDS && <Cards />}
 			<NotificationModal />
+			<ErrorModal />
 		</>
 	)
 }
