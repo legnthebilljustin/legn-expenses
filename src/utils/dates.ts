@@ -1,6 +1,18 @@
+import { CalendarDate } from "@nextui-org/react"
+
 export type DueDatesType = {
     billingDate: string
     paymentDueDate: string
+}
+
+export const isACalendarDate = (value: CalendarDate) => {
+    return (
+        typeof value === "object" && value !== null &&
+        typeof value.day === "number" &&
+        typeof value.month === "number" &&
+        typeof value.year === "number" &&
+        typeof value.era === "string"
+    )
 }
 
 export const getDateMinusDays = (days: number): Date | false => {

@@ -10,7 +10,6 @@ export const getCards = () => {
                 collection(db, collections.CARDS)
             )
         )
-        console.log("i got here")
         return result
     })
 }
