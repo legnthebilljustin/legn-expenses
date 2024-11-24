@@ -23,7 +23,6 @@ export const useFetchExpenses = (): ReturnType => {
     useEffect(() => {
         const query = async() => {
             const { data, success, error, errorCode } = await getTExpenses()
-
             checkIfSuccess(success, error, errorCode)
 
             const expenses = handleExpensesIteration(data)
@@ -85,7 +84,7 @@ export const useFetchExpenses = (): ReturnType => {
                 code: code || 400
             })
 
-            throw { message, code }
+            return false
         }
     }
 
