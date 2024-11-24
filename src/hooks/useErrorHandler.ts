@@ -7,7 +7,7 @@ type ReturnType = {
     resetError: () => void
 }
 
-export const useErrorHandler = ():ReturnType  => {
+export const useErrorHandler = (): ReturnType  => {
     const [errors, setErrors] = useState<ErrorPayloadType | null>(null)
 
     const resetError = () => setErrors(null)
