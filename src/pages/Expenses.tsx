@@ -1,6 +1,6 @@
 import { Button, DatePicker } from "@nextui-org/react"
-import ExpensesInputGroup from "../components/expenses/ExpensesInputGroup"
-import { useAddExpenses } from "../hooks"
+import { ExpensesInputGroup } from "@/components"
+import { useAddExpenses } from "@/hooks"
 
 export default function AddExpenses() {
     const {

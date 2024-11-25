@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react"
-import { ErrorPayloadType } from "../state/errorSlice"
+import { ErrorPayloadType } from "@/state/errorSlice"
 
 type ReturnType = {
     errors: ErrorPayloadType | null

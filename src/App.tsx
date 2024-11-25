@@ -1,7 +1,7 @@
 import { useState } from "react"
-import Navigation, { NavigationItem } from "./components/Navigation"
+import { NotificationModal, Navigation } from "./components"
+import { NavigationItem } from "./components/shared/Navigation"
 import { SCREENS } from "./constants/screens"
-import NotificationModal from "./components/NotificationModal"
 import { Dashboard, Cards, Expenses } from "./pages"
 import ErrorModal from "./components/shared/ErrorModal"
 

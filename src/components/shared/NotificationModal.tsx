@@ -1,6 +1,6 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react"
 import { useDispatch, useSelector } from "react-redux"
-import { closeNotification } from "../state/notificationSlice"
+import { closeNotification } from "@/state/notificationSlice"
 
 export default function NotificationModal() {
     const dispatch = useDispatch()

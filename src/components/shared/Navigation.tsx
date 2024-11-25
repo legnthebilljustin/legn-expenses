@@ -1,6 +1,7 @@
 import { Button } from "@nextui-org/react"
 import { useState } from "react"
-import { SCREENS } from "../constants/screens"
+import { SCREENS } from "@/constants/screens" 
+
 
 const navigationItems = [
     SCREENS.DASHBOARD, SCREENS.EXPENSES, SCREENS.CARDS

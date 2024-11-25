@@ -2,9 +2,8 @@ import { collection, doc, DocumentSnapshot, getDocs, limit, orderBy, query, star
 import db from "../firebase/config"
 import { firestoreHandler, FirestoreResponse } from "../firebase/firestoreService"
 import collections from "../firebase/collections"
-import { UpdateExpensesOverviewFields } from "./overview"
-import { ExpensesFormInputGroupType } from "../types/expenses"
-
+import { UpdateExpensesOverviewFields } from "@/types/overviews"
+import { ExpensesFormInputGroupType } from "@/types/expenses"
 const EXPENSES_LIMIT = 15
 
 export const addExpenses = async(formData: ExpensesFormInputGroupType[]): Promise<FirestoreResponse<{

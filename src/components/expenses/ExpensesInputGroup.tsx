@@ -1,5 +1,5 @@
 import { Input } from "@nextui-org/react";
-import { ExpensesFormInputGroupType } from "../../types/expenses";
+import { ExpensesFormInputGroupType } from "@/types/expenses";
 
 type Props = {
     index: number

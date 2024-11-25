@@ -1,6 +1,6 @@
 import { Card, CardBody } from "@nextui-org/react"
-import { ExpensesItemType } from "../../types/expenses"
-import { convertToCurrency } from "../../utils/currency"
+import { ExpensesItemType } from "@/types/expenses"
+import { convertToCurrency } from "@/utils/currency"
 
 type Props = {
     item: ExpensesItemType

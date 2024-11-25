@@ -1,8 +1,8 @@
 import { Button, Spinner } from "@nextui-org/react"
 import { useDispatch } from "react-redux"
-import ExpensesItem from "../components/expenses/ExpensesItem"
-import { useFetchExpenses } from "../hooks"
-import { openNotification, setNotificationMessage } from "../state/notificationSlice"
+import ExpensesItem from "@/components/expenses/ExpensesItem"
+import { useFetchExpenses } from "@/hooks"
+import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 
 export default function Dashboard() {
     const { 
