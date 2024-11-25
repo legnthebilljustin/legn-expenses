@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
-import { ExpensesItemType } from "../../types/expenses"
 import { DocumentSnapshot } from "firebase/firestore/lite"
-import { useErrorHandler } from "../useErrorHandler"
-import { getAdditionalExpenses, getTExpenses } from "../../apis/expenses"
+import { ExpensesItemType } from "@/types/expenses"
+import { useErrorHandler } from "@/hooks/useErrorHandler"
+import { getAdditionalExpenses, getTExpenses } from "@/apis/expenses"
 
 type ReturnType = {
     expenses: ExpensesItemType[]

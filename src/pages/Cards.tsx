@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { getCards } from "../apis/cards"
 import { Card, CardBody, Spinner } from "@nextui-org/react"
 import { useDispatch } from "react-redux"
-import { openNotification, setNotificationMessage } from "../state/notificationSlice"
-import { DueDatesType, getBillingAndDueDate } from "../utils/dates"
-import { CardDetailsType } from "../types/cards"
+import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
+import { DueDatesType, getBillingAndDueDate } from "@/utils/dates"
+import { CardDetailsType } from "@/types/cards"
 
 export default function Cards() {
     const [creditCards, setCreditCards] = useState<CardDetailsType[]>([])

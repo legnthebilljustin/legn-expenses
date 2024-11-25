@@ -2,11 +2,7 @@ import { collection, doc, getDocs, increment, query, QuerySnapshot, setDoc, upda
 import { firestoreHandler } from "../firebase/firestoreService"
 import collections from "../firebase/collections"
 import db from "../firebase/config"
-
-export type UpdateExpensesOverviewFields = {
-    amount: number
-    transactions: number
-}
+import { UpdateExpensesOverviewFields } from "@/types/overviews"
 
 const USER_ID = "Txd6N06oq8dOoQWP3fTc"
 
