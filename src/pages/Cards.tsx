@@ -1,54 +1,9 @@
-import { useEffect, useState } from "react"
-import { getCards } from "../apis/cards"
 import { Card, CardBody, Spinner } from "@nextui-org/react"
-import { useDispatch } from "react-redux"
-import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
-import { DueDatesType, getBillingAndDueDate } from "@/utils/dates"
 import { CardDetailsType } from "@/types/cards"
+import { useFetchCards } from "@/hooks/cards/useFetchCards"
 
 export default function Cards() {
-    const [creditCards, setCreditCards] = useState<CardDetailsType[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        const query = async() => {
-            const { success, data, error } = await getCards()
-
-            if (!success || !data?.docs) {
-                dispatch(setNotificationMessage(error || "Unable to fetch cards."))
-                dispatch(openNotification())
-
-                return false
-            }
-
-            if (data?.docs.length === 0) {
-                return setIsLoading(false)
-            }
-
-            if (data?.docs) {
-                const cards = [] as CardDetailsType[]
-
-                data.docs.forEach(doc => {
-                    const { name, billingDay, dueDaysAfterBilling } = doc.data()
-                    const result: DueDatesType = getBillingAndDueDate(billingDay, 20)
-                    
-                    cards.push({
-                        id: doc.id,
-                        name: name,
-                        billingDay: billingDay,
-                        dueDaysAfterBilling: dueDaysAfterBilling,
-                        dueDate: result.paymentDueDate,
-                        billingDate: result.billingDate
-                    })
-                })
-                setCreditCards(cards)
-                setIsLoading(false)
-            }
-        }
-
-        query()
-    }, [])
+    const { creditCardsList, isLoading } = useFetchCards()
 
     if (isLoading) {
         return <Spinner label="Getting your cards..." color="primary" />
@@ -56,7 +11,7 @@ export default function Cards() {
 
     return (
         <div className="max-w-[600px]">
-            {creditCards.map((card: CardDetailsType) => (
+            {creditCardsList.map((card: CardDetailsType) => (
                 <Card shadow="sm" className="mb-2" key={card.id}>
                     <CardBody className="px-4">
                         <div className="font-bold text-lg">{ card.name }</div>

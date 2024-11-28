@@ -9,4 +9,6 @@ export type ExpensesFormInputGroupType = {
     price: number
     itemName: string
     purchaseDate: Date | null
+    paymentMethod: string
+    cardId: string
 }

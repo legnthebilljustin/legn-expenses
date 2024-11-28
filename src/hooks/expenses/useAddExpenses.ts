@@ -44,7 +44,9 @@ export const useAddExpenses = (): ReturnType => {
         const newExpensesItem: ExpensesFormInputGroupType = {
             price: 0,
             itemName: "",
-            purchaseDate: parsedPurchaseDate
+            purchaseDate: parsedPurchaseDate,
+            paymentMethod: "",
+            cardId: ""
         }
 
         setFormData(prevFormData => [...prevFormData, newExpensesItem])
@@ -87,6 +89,7 @@ export const useAddExpenses = (): ReturnType => {
     const handleExpensesFormSubmit = useCallback(async() => {
         resetError()
         setIsSubmittingForm(true)
+        console.log(formData)
 
         const { data, success, error, errorCode } = await addExpenses(formData)
 
