@@ -17,7 +17,7 @@ export const addExpenses = async(formData: ExpensesFormInputGroupType[]): Promis
 
         let totalAmount = 0
 
-        formData.forEach(item => {
+        formData.forEach((item: ExpensesFormInputGroupType) => {
             const docRef = doc(collectionRef)
             totalAmount += item.price
             batch.set(docRef, item)    

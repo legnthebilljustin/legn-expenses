@@ -1,8 +1,9 @@
-import { Button, DatePicker } from "@nextui-org/react"
+import { Button, DatePicker, Spinner } from "@nextui-org/react"
 import { ExpensesInputGroup } from "@/components"
-import { useAddExpenses } from "@/hooks"
+import { useAddExpenses, useFetchCards } from "@/hooks"
 
 export default function AddExpenses() {
+    const { creditCardsList, isLoading } = useFetchCards()
     const {
         formData,
         purchaseDate,
@@ -11,6 +12,10 @@ export default function AddExpenses() {
         addFormDataItem,
         handleExpensesFormSubmit
     } = useAddExpenses()
+
+    if (isLoading) {
+        return <Spinner label="Fetching credit cards list for the form..." />
+    }
     
     return (
         <div>
@@ -21,7 +26,13 @@ export default function AddExpenses() {
                 value={purchaseDate}
                 onChange={handleDateInputChange}
             />
-            {formData.map((item, index) => <ExpensesInputGroup key={index} item={item} index={index} onChange={handleInputChange} />)}
+            {formData.map((item, index) => 
+                <ExpensesInputGroup key={index} 
+                    item={item} index={index} 
+                    onChange={handleInputChange}
+                    creditCardsList={creditCardsList}
+                />
+            )}
 
             <div className="mt-8 mb-4">
                 <Button color="primary" size="sm" className="mr-2"
