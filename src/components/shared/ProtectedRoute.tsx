@@ -27,5 +27,5 @@ export default function ProtectedRoute({ children }: PropsWithChildren) {
         return <Spinner label="Checking your credentials..." />
     }
 
-    return user ? children : <Navigate to="/unauthenticated" replace={true} />
+    return user ? children : <Navigate to="/403" replace={true} />
 }
