@@ -11,6 +11,10 @@ const router = createBrowserRouter([
         errorElement: "Page not found.",
         children: [
             {
+                path: "/login",
+                element: <Login />
+            },
+            {
                 path: "/dashboard",
                 element: <ProtectedRoute><Dashboard /></ProtectedRoute>
             },
@@ -23,10 +27,6 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute><Cards /></ProtectedRoute>
             }
         ]
-    },
-    {
-        path: "/login",
-        element: <Login />
     },
     {
         path: "/403",

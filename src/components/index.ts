@@ -1,6 +1,5 @@
 // shared
 import ErrorModal from "./shared/ErrorModal"
-import Navigation from "./shared/Navigation"
 import NotificationModal from "./shared/NotificationModal"
 import NavigationBar from "./shared/NavigationBar"
 import ProtectedRoute from "./shared/ProtectedRoute"
@@ -16,7 +15,6 @@ import ExpensesItem from "./expenses/ExpensesItem"
 
 export {
     ErrorModal,
-    Navigation,
     NotificationModal,
 
     ExpensesInputGroup,

@@ -4,28 +4,20 @@
  * firebase also securely handles session persistence and token management.
  */
 
-import { auth } from "@/firebase/config"
+import { RootState } from "@/state/store"
 import { Spinner } from "@nextui-org/react"
-import { onAuthStateChanged, User } from "firebase/auth"
-import { PropsWithChildren, useEffect, useState } from "react"
+import React, { PropsWithChildren } from "react"
+import { useSelector } from "react-redux"
 import { Navigate } from "react-router-dom"
 
-export default function ProtectedRoute({ children }: PropsWithChildren) {
-    const [user, setUser] = useState<User | null>(null)
-    const [loading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            setIsLoading(false);
-        });
-
-        return () => unsubscribe()
-    }, [])
-
-    if (loading) {
-        return <Spinner label="Checking your credentials..." />
+const ProtectedRoute = React.memo(({ children }: PropsWithChildren) => {
+    const { uid } = useSelector((state: RootState) => state.auth);
+  
+    if (uid === null) {
+      return <Spinner label="Checking your credentials..." />;
     }
-
-    return user ? children : <Navigate to="/403" replace={true} />
-}
+  
+    return uid ? <>{children}</> : <Navigate to="/403" replace />;
+  });
+  
+  export default ProtectedRoute;

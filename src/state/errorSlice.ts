@@ -30,6 +30,7 @@ const errorSlice = createSlice({
             state.code = undefined
         },
         setErrorDetails: (state, action: PayloadAction<ErrorPayloadType>) => {
+            console.log('setting error details')
             const { message, code } = action.payload
 
             if (!message || !code) {

@@ -1,15 +1,30 @@
 import React from "react";
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link} from "@nextui-org/react";
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem} from "@nextui-org/react";
 import { capitalizeString } from "@/utils/misc";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+
+const menuItems = [
+    "dashboard", "expenses", "cards", "logout"
+] as const;
+
+type NavigationItem = typeof menuItems[number]
 
 export default function NavigationBar() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const { uid } = useSelector((state: RootState) => state.auth)
+    const navigate = useNavigate()
 
-    const menuItems = [
-        "dashboard", "expenses", "cards", "logout"
-    ];
+    if (!uid) {
+        return ""
+    }
 
-  return (
+    const handleRouteNav = (item: NavigationItem) => {
+        navigate(`/${item}`)
+    }
+
+    return (
         <Navbar onMenuOpenChange={setIsMenuOpen}>
             <NavbarContent>
                 <NavbarMenuToggle
@@ -22,17 +37,18 @@ export default function NavigationBar() {
             </NavbarContent>
 
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                {menuItems.map((item: string, index: number) => (
+                {menuItems.map((item: NavigationItem, index: number) => (
                     <NavbarItem key={index}>
-                        <Link color="foreground" href={item}>{ capitalizeString(item) }</Link>
+                        <div className="cursor-pointer" onClick={() => handleRouteNav(item)}>{ capitalizeString(item) }</div>
+                        
                     </NavbarItem>
                 ))}
             </NavbarContent>
 
             <NavbarMenu>
-                {menuItems.map((item, index) => (
+                {menuItems.map((item: NavigationItem, index) => (
                 <NavbarMenuItem key={`${item}-${index}`}>
-                    <Link className="cursor-pointer" color="foreground">{item}</Link>
+                    <div className="cursor-pointer" onClick={() => handleRouteNav(item)}>{ capitalizeString(item) }</div>
                 </NavbarMenuItem>
                 ))}
             </NavbarMenu>

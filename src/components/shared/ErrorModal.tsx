@@ -1,7 +1,7 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeErrorModal } from "../../state/errorSlice";
-import { RootState } from "../../state/store";
+import { RootState } from "@/state/store";
 
 export default function ErrorModal() {
     const dispatch = useDispatch()
@@ -17,7 +17,7 @@ export default function ErrorModal() {
                 break;
             
             case 401:
-                errorHeading = "You must be logged in."
+                errorHeading = "Unauthorized access."
                 break;
             
             case 403:
@@ -47,7 +47,7 @@ export default function ErrorModal() {
                     <>
                         <ModalHeader className="text-red-700">{ handleErrorDisplay() }</ModalHeader>
                         <ModalBody>
-                            <p>{ message || "We cannot process your request as of this time." }</p>
+                            <p className="text-gray-800">{ message || "We cannot process your request as of this time." }</p>
                         </ModalBody>
                     </>
                 )}

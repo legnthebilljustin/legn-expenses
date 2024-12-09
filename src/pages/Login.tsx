@@ -1,4 +1,5 @@
 import { auth } from "@/firebase/config";
+import { setUid } from "@/state/authSlice";
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice";
 import { Button, Input } from "@nextui-org/react";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -15,7 +16,10 @@ export default function Login() {
 
     const handleLogin = async() => {
         try {
-            await signInWithEmailAndPassword(auth, email, password)
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user
+
+            dispatch(setUid(user.uid))
             navigate('/dashboard', { replace: true })
         } catch(error) {
             dispatch(setErrorDetails({ message: "Invalid credentials.", code: 401 }))
