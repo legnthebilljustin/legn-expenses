@@ -10,7 +10,8 @@ export default function AddExpenses() {
         handleDateInputChange,
         handleInputChange,
         addFormDataItem,
-        handleExpensesFormSubmit
+        handleExpensesFormSubmit,
+        removeFormDataItem
     } = useAddExpenses()
 
     if (isLoading) {
@@ -31,6 +32,7 @@ export default function AddExpenses() {
                     item={item} index={index} 
                     onChange={handleInputChange}
                     creditCardsList={creditCardsList}
+                    removeFormDataItem={removeFormDataItem}
                 />
             )}
 

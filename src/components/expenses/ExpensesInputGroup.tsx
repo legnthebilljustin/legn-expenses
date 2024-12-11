@@ -9,9 +9,10 @@ type Props = {
     item: ExpensesFormInputGroupType
     onChange: Function
     creditCardsList: CardDetailsType[]
+    removeFormDataItem: Function
 }
 
-export default function ExpensesInputGroup({ index, item, onChange, creditCardsList }: Props) {
+export default function ExpensesInputGroup({ index, item, onChange, creditCardsList, removeFormDataItem }: Props) {
     const paymentMethods: Array<(typeof PAYMENT_METHODS_ENUMS)[keyof typeof PAYMENT_METHODS_ENUMS]> = [PAYMENT_METHODS_ENUMS.CARD, PAYMENT_METHODS_ENUMS.CASH]
     const [enableCardSelection, setEnableCardSelection] = useState(false)
 
@@ -64,6 +65,9 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
                     <SelectItem key={card.id as string}>{ card.name }</SelectItem>
                 ))}
             </Select>
+            <div className="ml-2 flex justify-center items-center">
+                <i className="bx bxs-trash text-red-500 cursor-pointer" onClick={() => removeFormDataItem(index)} />
+            </div>
         </div>
     )
 }

@@ -21,6 +21,7 @@ type ReturnType = {
     handleDateInputChange: (date: CalendarDate) => void
     handleInputChange: (event: ChangeEvent<HTMLInputElement>, index: number) => void
     addFormDataItem: () => void
+    removeFormDataItem: (indexToRemove: number) => void
     handleExpensesFormSubmit: () => void
 }
 
@@ -51,6 +52,10 @@ export const useAddExpenses = (): ReturnType => {
 
         setFormData(prevFormData => [...prevFormData, newExpensesItem])
     }, [parsedPurchaseDate, setFormData])
+
+    const removeFormDataItem = useCallback((indexToRemove: number) => {
+        setFormData((prevFormData) => prevFormData.filter((_, index) => index !== indexToRemove))
+    }, [setFormData])
 
     const handleDateInputChange = (date: CalendarDate): void => {
         if (!isACalendarDate(date)) {
@@ -128,6 +133,7 @@ export const useAddExpenses = (): ReturnType => {
         handleDateInputChange,
         handleInputChange,
         addFormDataItem,
+        removeFormDataItem,
         handleExpensesFormSubmit,
     }
 }
