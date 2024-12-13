@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import { Cards, Dashboard, Expenses, Unauthorized } from "@/pages";
-import Login from "@/pages/Login";
+import { Cards, Dashboard, Expenses, Login, Register, Unauthorized } from "@/pages";
 import { ProtectedRoute } from "@/components";
 
 const router = createBrowserRouter([
@@ -10,6 +9,10 @@ const router = createBrowserRouter([
         element: <App />,
         errorElement: "Page not found.",
         children: [
+            {
+                path: "/register",
+                element: <Register />
+            },
             {
                 path: "/login",
                 element: <Login />
