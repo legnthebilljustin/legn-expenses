@@ -5,4 +5,4 @@ export const COLLECTIONS = {
     USERS: "users"
 }
 
-export default COLLECTIONS
+export const BASE_PATH = `${COLLECTIONS.USERS}/`

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { getCards } from "@/apis/cards"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { CardDetailsType } from "@/types/cards"
 import { DueDatesType, getBillingAndDueDate } from "@/utils/dates"
+import { RootState } from "@/state/store"
 
 type ReturnType = {
     creditCardsList: CardDetailsType[]
@@ -11,32 +12,34 @@ type ReturnType = {
 }
 
 export const useFetchCards = (): ReturnType => {
+    const { uid } = useSelector((state: RootState) => state.auth)
     const [creditCardsList, setCreditCardsList] = useState<CardDetailsType[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     const dispatch = useDispatch()
     
     useEffect(() => {
-        fetchCards()
-    }, [])
+        if (uid) {
+            fetchCards(uid)
+        }
+    }, [uid])
 
-    const fetchCards = async() => {
-        const { success, data, error, errorCode } = await getCards()
+    const fetchCards = async(userUid: string) => {
+        const { success, data, error, errorCode } = await getCards(userUid)
 
         if (success && data?.docs) {
             const cards = [] as CardDetailsType[]
 
             data.docs.forEach(doc => {
-                const { name, billingDay, dueDaysAfterBilling } = doc.data()
+                const { name, billingDay, dueDaysAfterBilling, color } = doc.data()
                 const result: DueDatesType = getBillingAndDueDate(billingDay, 20)
                 
                 cards.push({
                     id: doc.id,
                     name: name,
                     billingDay: billingDay,
-                    dueDaysAfterBilling: dueDaysAfterBilling,
                     dueDate: result.paymentDueDate,
-                    billingDate: result.billingDate
+                    color: color
                 })
             })
             setCreditCardsList(cards)

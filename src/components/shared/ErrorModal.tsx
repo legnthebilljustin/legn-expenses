@@ -40,7 +40,7 @@ export default function ErrorModal() {
         <Modal backdrop="blur" size="sm"
             isOpen={isOpen} onClose={() => handleCloseErrorModal()}
             placement="top-center"
-            className="py-4"
+            className="py-4 dark"
         >
             <ModalContent>
                 {() => (

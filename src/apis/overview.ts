@@ -2,7 +2,7 @@ import { collection, doc, getDocs, increment, query, QuerySnapshot, setDoc, upda
 import { firestoreHandler } from "../firebase/firestoreService"
 import db from "../firebase/config"
 import { UpdateExpensesOverviewFields } from "@/types/overviews"
-import COLLECTIONS from "@/firebase/collections"
+import { COLLECTIONS } from "@/firebase/collections"
 
 const USER_ID = "Txd6N06oq8dOoQWP3fTc"
 

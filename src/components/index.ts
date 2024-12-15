@@ -4,6 +4,7 @@ import NotificationModal from "./shared/NotificationModal"
 import NavigationBar from "./shared/NavigationBar"
 import ProtectedRoute from "./shared/ProtectedRoute"
 import PaymentTypeChip from "./shared/PaymentTypeChip"
+import PageHeading from "./shared/PageHeading"
 
 // expenses
 import ExpensesInputGroup from "./expenses/ExpensesInputGroup"
@@ -12,7 +13,8 @@ import ExpensesList from "./expenses/ExpensesList"
 // dashboard
 
 // cards
-
+import CardItem from "./cards/CardItem"
+import AddCardForm from "./cards/AddCardForm"
 
 export {
     ErrorModal,
@@ -24,5 +26,8 @@ export {
     ExpensesList,
 
     NavigationBar,
-    ProtectedRoute
+    ProtectedRoute,
+    CardItem,
+    PageHeading,
+    AddCardForm
 }
