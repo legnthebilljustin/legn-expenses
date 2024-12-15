@@ -1,8 +1,8 @@
 import { collection, doc, getDocs, increment, query, QuerySnapshot, setDoc, updateDoc, where, writeBatch } from "firebase/firestore/lite"
 import { firestoreHandler } from "../firebase/firestoreService"
-import collections from "../firebase/collections"
 import db from "../firebase/config"
 import { UpdateExpensesOverviewFields } from "@/types/overviews"
+import COLLECTIONS from "@/firebase/collections"
 
 const USER_ID = "Txd6N06oq8dOoQWP3fTc"
 
@@ -21,7 +21,7 @@ export const findAndUpdateExpensesOverview = async(updateData: UpdateExpensesOve
 
 const findExpensesOverview = async(fieldName: string) => {
     return firestoreHandler(async() => {
-        const expensesRef = collection(db, collections.OVERVIEW)
+        const expensesRef = collection(db, COLLECTIONS.OVERVIEW)
         const q = query(expensesRef, where("name", "==", fieldName))
 
         const querySnapshot = await getDocs(q)
@@ -31,7 +31,7 @@ const findExpensesOverview = async(fieldName: string) => {
 
 const updateExpensesOverview = async(docId: string, updateData: UpdateExpensesOverviewFields) => {
     return firestoreHandler(async() => {
-        const docRef = doc(db, collections.OVERVIEW, docId)
+        const docRef = doc(db, COLLECTIONS.OVERVIEW, docId)
 
         await updateDoc(docRef, {
             amount: increment(updateData.amount),
@@ -59,7 +59,7 @@ const addMonthlyOverviewRecord = async(
 ) => {
     try {
         const customId = `${year}${month}`
-        const userOverviewRef = doc(db, `users/${userId}/${collections.OVERVIEW}/${customId}`)
+        const userOverviewRef = doc(db, `users/${userId}/${COLLECTIONS.OVERVIEW}/${customId}`)
 
         const data = {
             amount, transactions
@@ -86,11 +86,11 @@ const createUsersSubCollectionAndTotal = async(
         totalAmount += expenseData.price
         totalTransactions += 1
 
-        const userExpensesRef = doc(db, `users/${userId}/${collections.EXPENSES}/2024/10/${expenseDoc.id}`)
+        const userExpensesRef = doc(db, `users/${userId}/${COLLECTIONS.EXPENSES}/2024/10/${expenseDoc.id}`)
         
         batch.set(userExpensesRef, expenseData)
 
-        batch.delete(doc(db, collections.EXPENSES, expenseDoc.id))
+        batch.delete(doc(db, COLLECTIONS.EXPENSES, expenseDoc.id))
     }) 
 
     await batch.commit()
@@ -106,7 +106,7 @@ const getMonthAndYearExpenses = async(month: number, year: number): Promise<Quer
     
     const startDate = new Date(year, month - 1, 1)
     const endDate = new Date(year, month, 0)
-    const expensesRef = collection(db, collections.EXPENSES)
+    const expensesRef = collection(db, COLLECTIONS.EXPENSES)
     const monthQuery = query(
         expensesRef,
         where("purchaseDate", ">=", startDate),

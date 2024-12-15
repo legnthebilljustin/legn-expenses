@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react"
 import { DocumentSnapshot } from "firebase/firestore/lite"
-import { ExpensesItemType } from "@/types/expenses"
+import { GroupedExpensesType } from "@/types/expenses"
 import { useErrorHandler } from "@/hooks/useErrorHandler"
-import { getAdditionalExpenses, getTExpenses } from "@/apis/expenses"
+import { getAdditionalExpenses, getExpenses } from "@/apis/expenses"
+import { useSelector } from "react-redux"
+import { RootState } from "@/state/store"
 
 type ReturnType = {
-    expenses: ExpensesItemType[]
+    expenses: GroupedExpensesType[]
     isLoading: boolean
     isLoadingAdditional: boolean
     errors: any
@@ -13,7 +15,8 @@ type ReturnType = {
 }
 
 export const useFetchExpenses = (): ReturnType => {
-    const [expensesList, setExpensesList] = useState<ExpensesItemType[]>([])
+    const { uid } = useSelector((state: RootState) => state.auth)
+    const [expensesList, setExpensesList] = useState<GroupedExpensesType[]>([])
     const [isInitialLoading, setIsInitialLoading] = useState(true)
     const [iseFetchingAdditional, setIsFetchingAdditional] = useState(false)
     const [lastSnapshot, setLastSnapshot] = useState<DocumentSnapshot | undefined>(undefined)
@@ -22,70 +25,82 @@ export const useFetchExpenses = (): ReturnType => {
 
     useEffect(() => {
         const query = async() => {
-            const { data, success, error, errorCode } = await getTExpenses()
-            checkIfSuccess(success, error, errorCode)
+            if (uid) {
+                const { data, success, error, errorCode } = await getExpenses(uid)
 
-            const expenses = handleExpensesIteration(data)
-            setExpensesList(expenses)
-            setLastSnapshot(data?.docs[data.docs.length - 1])
-            setIsInitialLoading(false)
+                if (!data || !success) {
+                    setErrors({
+                        message: error || "An unknown error occured.",
+                        code: errorCode || 400
+                    })
+        
+                    return false
+                }
+                
+                const groupedExpenses = groupExpensesByPurchaseDate(data)
+                setExpensesList(groupedExpenses)
+                setLastSnapshot(data[data.length - 1])
+                setIsInitialLoading(false)
+            }
         }
-
         query()
-    }, [])
+    }, [uid])
 
     const loadMoreData = useCallback(async() => {
         resetError()
         // needs to do something if no more additional transactions
         // continuous fetch will return `Function startAfter() called with invalid data. Unsupported field value: undefined`
         setIsFetchingAdditional(true)
-        if (lastSnapshot === undefined) {
+        if (lastSnapshot === undefined || !uid) {
             return false    // what to do in this scenario?
         }
 
-        const { data, success, error, errorCode } = await getAdditionalExpenses(lastSnapshot)
+        const { data, success, error, errorCode } = await getAdditionalExpenses(lastSnapshot, uid)
 
-        checkIfSuccess(success, error, errorCode)
-
-        const expenses = handleExpensesIteration(data?.docs)
-        setExpensesList(prevExpensesList => [
-            ...prevExpensesList,
-            ...expenses
-        ])
-
-        setLastSnapshot(data?.docs[data.docs.length - 1])
-        setIsFetchingAdditional(false)
-    }, [expensesList, lastSnapshot, setExpensesList, resetError])
-
-    const handleExpensesIteration = (expensesParam: any): ExpensesItemType[] => {
-        const expenses: ExpensesItemType[] = []
-
-        if (expensesParam) {
-            expensesParam.forEach((doc: any) => {
-                const { purchaseDate, itemName, price } = doc.data()
-                const parsedPurchaseDate = new Date(purchaseDate.seconds * 1000).toDateString()
-
-                expenses.push({
-                    id: doc.id,
-                    purchaseDate: parsedPurchaseDate,
-                    itemName, price
-                })
-
-            })
-        }
-
-        return expenses
-    }
-
-    const checkIfSuccess = (didFail: boolean, message: string | undefined, code: number | undefined) => {
-        if (!didFail) {
+        if (!data || !success) {
             setErrors({
-                message: message || "An unknown error occured.",
-                code: code || 400
+                message: error || "An unknown error occured.",
+                code: errorCode || 400
             })
 
             return false
         }
+        
+        const grouped = groupExpensesByPurchaseDate(data)
+        /**
+         * NOTE: commenting this out since i am still deciding if additional expenses should be appended or;
+         * if i will do pagination instead
+         */
+        // setExpensesList(prevExpensesList => [
+        //     ...prevExpensesList,
+        //     ...grouped
+        // ])
+        
+        setExpensesList(grouped)
+
+        setLastSnapshot(data[data.length - 1])
+        setIsFetchingAdditional(false)
+    }, [expensesList, lastSnapshot, setExpensesList, resetError])
+
+    const groupExpensesByPurchaseDate = (docs: any): GroupedExpensesType[] => {
+        const grouped = docs.reduce((grouped: any, doc: any) => {
+            const purchaseDate = doc.data().purchaseDate.toDate();
+            const dateKey = purchaseDate.toDateString();
+
+            if (!grouped[dateKey]) {
+                grouped[dateKey] = [];
+            }
+            grouped[dateKey].push({ id: doc.id, ...doc.data() });
+
+            return grouped;
+        }, {})
+
+        const entries = Object.entries(grouped).map(([date, expenses]) => ({
+            purchaseDate: date,
+            expenses,
+        }));
+
+        return entries as GroupedExpensesType[]
     }
 
     return {

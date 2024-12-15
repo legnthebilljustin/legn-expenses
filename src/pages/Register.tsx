@@ -1,4 +1,5 @@
 import db, { auth } from "@/firebase/config";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { setUid } from "@/state/authSlice";
 import { Button, Input } from "@nextui-org/react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -12,6 +13,8 @@ export default function Register() {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    useAuthRedirect()
 
     const navigate = useNavigate()
     const dispatch = useDispatch()

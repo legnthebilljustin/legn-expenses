@@ -10,8 +10,6 @@ export const useAuthRedirect = () => {
         
         if (uid) {
             navigate("/dashboard", { replace: true })
-        } else {
-            navigate('/403', { replace: true })
         }
     }, [])
 }

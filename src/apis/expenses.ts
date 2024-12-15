@@ -1,19 +1,27 @@
 import { collection, doc, DocumentSnapshot, getDocs, limit, orderBy, query, startAfter, writeBatch } from "firebase/firestore/lite"
 import db from "../firebase/config"
 import { firestoreHandler, FirestoreResponse } from "../firebase/firestoreService"
-import collections from "../firebase/collections"
 import { UpdateExpensesOverviewFields } from "@/types/overviews"
 import { ExpensesFormInputGroupType } from "@/types/expenses"
-const EXPENSES_LIMIT = 15
+import { COLLECTIONS } from "@/firebase/collections"
+import { getUserSubCollectionPath } from "@/utils/service"
 
-export const addExpenses = async(formData: ExpensesFormInputGroupType[]): Promise<FirestoreResponse<{
+const EXPENSES_LIMIT = 40
+const BASE_PATH = `${COLLECTIONS.USERS}/`
+
+export const addExpenses = async(
+    formData: ExpensesFormInputGroupType[],
+    userUid: string
+): Promise<FirestoreResponse<{
     data: UpdateExpensesOverviewFields
     message: string
     success: boolean
 }>> => {
+
     return firestoreHandler(async() => {
+        const userCollectionPath = getUserSubCollectionPath(userUid, `${COLLECTIONS.EXPENSES}`)
         const batch = writeBatch(db)
-        const collectionRef = collection(db, collections.EXPENSES)
+        const collectionRef = collection(db, userCollectionPath)
 
         let totalAmount = 0
 
@@ -40,33 +48,34 @@ export const addExpenses = async(formData: ExpensesFormInputGroupType[]): Promis
     })
 }
 
-export const getTExpenses = async() => {
+export const getExpenses = async(uid: string) => {
+    
     return firestoreHandler(async() => {
         const querySnapshot = await getDocs(
             query(
-                collection(db, collections.EXPENSES),
+                collection(db, `${BASE_PATH + uid}/${COLLECTIONS.EXPENSES}`),
                 orderBy("purchaseDate", "desc"),
                 limit(EXPENSES_LIMIT)
             )
         )
-
-        return querySnapshot
+        return querySnapshot.docs
     })
 }
 
 export const getAdditionalExpenses = async(
-    snapshot: DocumentSnapshot
+    snapshot: DocumentSnapshot,
+    uid: string
 ) => {
     return firestoreHandler(async() => {
         const querySnapshot = await getDocs(
             query(
-                collection(db, collections.EXPENSES),
+                collection(db, `${BASE_PATH + uid}/${COLLECTIONS.EXPENSES}`),
                 orderBy("purchaseDate", "desc"),
                 startAfter(snapshot),
                 limit(EXPENSES_LIMIT)
             )
         )
 
-        return querySnapshot
+        return querySnapshot.docs
     })
 }

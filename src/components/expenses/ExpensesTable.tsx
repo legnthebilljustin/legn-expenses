@@ -1,0 +1,34 @@
+import { ExpensesItemType } from "@/types/expenses"
+import { convertToCurrency } from "@/utils/currency"
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import PaymentTypeChip from "../shared/PaymentTypeChip"
+
+const columns = [
+    { key: "item", label: "item" },
+    { key: "paymentMethod", label: "payment method" },
+    { key: "amount", label: "amount" }
+]
+
+type Props = {
+    expenses: ExpensesItemType[]
+}
+
+export default function ExpensesTable({ expenses }: Props) {
+    return <Table aria-label="expenses-table">
+        <TableHeader columns={columns}>
+            {(column) => <TableColumn key={column.key} 
+                    align={column.key === "amount" ? "end" : "start"}
+                    className="uppercase"
+                >{ column.label }</TableColumn>}
+        </TableHeader>
+        <TableBody>
+            {expenses.map((item: ExpensesItemType) => (
+                <TableRow key={item.id}>
+                    <TableCell width="60%">{ item.itemName }</TableCell>
+                    <TableCell width="20%"><PaymentTypeChip paymentType={item.paymentMethod} /></TableCell>
+                    <TableCell width="20%">Php { convertToCurrency(item.price) }</TableCell>
+                </TableRow>
+            ))}
+        </TableBody>
+    </Table>
+}

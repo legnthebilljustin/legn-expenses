@@ -1,8 +1,8 @@
 import { Button, Spinner } from "@nextui-org/react"
 import { useDispatch } from "react-redux"
-import ExpensesItem from "@/components/expenses/ExpensesItem"
 import { useFetchExpenses } from "@/hooks"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
+import { ExpensesList } from "@/components"
 
 export default function Dashboard() {
     const { 
@@ -25,19 +25,18 @@ export default function Dashboard() {
         return false
     }
 
-    return (
-        <div className="max-w-[600px]">
-            {/* <Button color="primary" onClick={() => migrateMonthlyExpenses()}>Migrate October Expenses</Button> */}
-            {/* everything below here should be transferred to the "Expenses" page */}
-            <div className="font-bold mb-3">TRANSACTIONS</div>
-            
-            {expenses.map((item: any) => <ExpensesItem key={item.id} item={item} />)}
+    if (!expenses.length) {
+        return <div className="text-center mt-8">No expenses found.</div>
+    }
 
+    return (
+        <div className="max-w-[700px]">
+            <ExpensesList groupedExpenses={expenses} />
             <div className="flex my-4 justify-center">
                 <Button size="sm" color="primary" className="mr-2"
                     onClick={loadMoreData}
                     isLoading={isLoadingAdditional}
-                >Load more expenses...</Button>
+                >Next</Button>
             </div>
         </div>
     )
