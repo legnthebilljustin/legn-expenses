@@ -8,11 +8,12 @@ type Props = {
     index: number
     item: ExpensesFormInputGroupType
     onChange: Function
+    onCardSelectChange: Function
     creditCardsList: CardDetailsType[]
     removeFormDataItem: Function
 }
 
-export default function ExpensesInputGroup({ index, item, onChange, creditCardsList, removeFormDataItem }: Props) {
+export default function ExpensesInputGroup({ index, item, onChange, creditCardsList, removeFormDataItem, onCardSelectChange }: Props) {
     const paymentMethods: Array<(typeof PAYMENT_METHODS_ENUMS)[keyof typeof PAYMENT_METHODS_ENUMS]> = [PAYMENT_METHODS_ENUMS.CARD, PAYMENT_METHODS_ENUMS.CASH]
     const [enableCardSelection, setEnableCardSelection] = useState(false)
 
@@ -58,12 +59,12 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
             <Select label="Select Card" size="sm"
                 className="max-w-[150px]" name="cardId"
                 placeholder="Select..."
-                onChange={(event) => onChange(event, index)}
+                onChange={(event) => onCardSelectChange(event, index)}
                 isDisabled={!enableCardSelection}
             >
                 { (!creditCardsList.length) ? <SelectItem key={0} value="">No added cards yet.</SelectItem> :
                     creditCardsList.map((card: CardDetailsType) => (
-                        <SelectItem key={card.id as string}>{ card.name }</SelectItem>
+                        <SelectItem key={card.id as string} className="truncate">{ card.name }</SelectItem>
                     ))
                 }
             </Select>

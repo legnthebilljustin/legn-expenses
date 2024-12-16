@@ -5,6 +5,7 @@ export type ExpensesItemType = {
     purchaseDate: string
     paymentMethod: string
     cardId: string
+    card: ExpensesCardInfoType
 }
 
 export type ExpensesFormInputGroupType = {
@@ -13,9 +14,15 @@ export type ExpensesFormInputGroupType = {
     paymentMethod: string
     cardId: string
     purchaseDate: Date | null
+    card: ExpensesCardInfoType | null
 }
 
 export type GroupedExpensesType = {
     purchaseDate: string
     expenses: ExpensesItemType[]
+}
+
+export type ExpensesCardInfoType = {
+    name: string | undefined
+    color: string | undefined
 }

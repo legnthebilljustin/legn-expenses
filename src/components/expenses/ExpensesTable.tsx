@@ -25,7 +25,11 @@ export default function ExpensesTable({ expenses }: Props) {
             {expenses.map((item: ExpensesItemType) => (
                 <TableRow key={item.id}>
                     <TableCell width="60%">{ item.itemName }</TableCell>
-                    <TableCell width="20%"><PaymentTypeChip paymentType={item.paymentMethod} /></TableCell>
+                    <TableCell width="20%">
+                        <PaymentTypeChip paymentType={item.paymentMethod} 
+                            card={item.card} 
+                        />
+                    </TableCell>
                     <TableCell width="20%">Php { convertToCurrency(item.price) }</TableCell>
                 </TableRow>
             ))}

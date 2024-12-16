@@ -9,13 +9,14 @@ export default function AddExpenses() {
         purchaseDate,
         handleDateInputChange,
         handleInputChange,
+        handleCardSelectionInputChange,
         addFormDataItem,
         handleExpensesFormSubmit,
         removeFormDataItem
-    } = useAddExpenses()
+    } = useAddExpenses({ creditCardsList })
 
     if (isLoading) {
-        return <Spinner label="Fetching credit cards list for the form..." />
+        return <Spinner label="Loading expenses form..." />
     }
     
     return (
@@ -31,6 +32,7 @@ export default function AddExpenses() {
                 <ExpensesInputGroup key={index} 
                     item={item} index={index} 
                     onChange={handleInputChange}
+                    onCardSelectChange={handleCardSelectionInputChange}
                     creditCardsList={creditCardsList}
                     removeFormDataItem={removeFormDataItem}
                 />
