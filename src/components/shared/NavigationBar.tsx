@@ -2,8 +2,11 @@ import React from "react";
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem} from "@nextui-org/react";
 import { capitalizeString } from "@/utils/misc";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase/config";
+import { clearUser } from "@/state/authSlice";
 
 const menuItems = [
     "dashboard", "expenses", "cards", "logout"
@@ -15,13 +18,27 @@ export default function NavigationBar() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const { uid } = useSelector((state: RootState) => state.auth)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     if (!uid) {
         return ""
     }
 
     const handleRouteNav = (item: NavigationItem) => {
+        if (item === "logout") {
+            return handleLogout()
+        }
+
         navigate(`/${item}`)
+    }
+
+    const handleLogout = () => {
+        signOut(auth)
+        dispatch(clearUser())
+        
+        setTimeout(() => {
+            navigate("/login", { replace: true })
+        }, 2000)
     }
 
     return (
