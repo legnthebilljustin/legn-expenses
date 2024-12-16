@@ -9,7 +9,6 @@ export default function ExpensesList({ groupedExpenses }: Props) {
     if (!groupedExpenses.length) {
         return "No grouped expenses provided."
     }
-    console.log(groupedExpenses)
     return (
         <div>
             {groupedExpenses.map((group: GroupedExpensesType, index: number) => (

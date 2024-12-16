@@ -6,12 +6,15 @@ type Props = {
 }
 
 export default function CardItem({ card }: Props) {
+    const isPaid = card.isPaid
     return <>
         <Card className="px-4 py-2 max-w-[400px]">
             <CardBody>
             <div className="w-full flex justify-between">
                     <div className="font-bold" style={{ color: card.color }}>{ card.name }</div>
-                    <Chip size="sm">Pending</Chip>
+                    {isPaid ? <Chip size="sm" variant="flat" color="success">Paid</Chip>
+                        : <Chip size="sm" variant="flat">Pending</Chip>
+                    }
                 </div>
                 <p className="text-xs text-gray-400">Billing every { card.billingDay }th of the month</p>
                 <div className="flex justify-between mt-4">
@@ -26,7 +29,9 @@ export default function CardItem({ card }: Props) {
                             </Button>
                         </Tooltip>
                         <Tooltip size="sm" key={2} content="Mark as Paid" className="bg-green-600">
-                            <Button isIconOnly size="sm" radius="full" className="bg-green-600">
+                            <Button isIconOnly size="sm" radius="full" className="bg-green-600"
+                                isDisabled={isPaid}
+                            >
                                 <i className='bx bxs-wallet'></i>
                             </Button>
                         </Tooltip>
