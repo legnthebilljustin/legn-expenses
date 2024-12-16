@@ -61,9 +61,11 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
                 onChange={(event) => onChange(event, index)}
                 isDisabled={!enableCardSelection}
             >
-                {creditCardsList.map((card: CardDetailsType) => (
-                    <SelectItem key={card.id as string}>{ card.name }</SelectItem>
-                ))}
+                { (!creditCardsList.length) ? <SelectItem key={0} value="">No added cards yet.</SelectItem> :
+                    creditCardsList.map((card: CardDetailsType) => (
+                        <SelectItem key={card.id as string}>{ card.name }</SelectItem>
+                    ))
+                }
             </Select>
             <div className="ml-2 flex justify-center items-center">
                 <i className="bx bxs-trash text-red-500 cursor-pointer" onClick={() => removeFormDataItem(index)} />

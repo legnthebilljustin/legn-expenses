@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { CalendarDate } from "@nextui-org/react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
@@ -12,6 +12,7 @@ import { ExpensesFormInputGroupType } from "@/types/expenses"
 
 import { useErrorHandler } from "../useErrorHandler"
 import { isACalendarDate } from "@/utils/dates"
+import { RootState } from "@/state/store"
 
 
 type ReturnType = {
@@ -26,6 +27,7 @@ type ReturnType = {
 }
 
 export const useAddExpenses = (): ReturnType => {
+    const { uid } = useSelector((state: RootState) => state.auth)
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
     const [formData, setFormData] = useState<ExpensesFormInputGroupType[]>([])
     const [isSubmittingForm, setIsSubmittingForm] = useState(false)
@@ -45,9 +47,9 @@ export const useAddExpenses = (): ReturnType => {
         const newExpensesItem: ExpensesFormInputGroupType = {
             price: 0,
             itemName: "",
-            purchaseDate: parsedPurchaseDate,
             paymentMethod: "",
-            cardId: ""
+            cardId: "",
+            purchaseDate: parsedPurchaseDate
         }
 
         setFormData(prevFormData => [...prevFormData, newExpensesItem])
@@ -93,10 +95,16 @@ export const useAddExpenses = (): ReturnType => {
 
     const handleExpensesFormSubmit = useCallback(async() => {
         resetError()
+        if (!formData.length || purchaseDate === null || uid === null) {
+            dispatch(setErrorDetails({
+                message: "Cannot process expenses form submission due to missing required information.",
+                code: 400
+            }))
+            return 
+        }
         setIsSubmittingForm(true)
-        console.log(formData)
-
-        const { data, success, error, errorCode } = await addExpenses(formData)
+        
+        const { data, success, error, errorCode } = await addExpenses(formData, uid)
 
         if (success && data?.data) {
             const overviewUpdateData = {

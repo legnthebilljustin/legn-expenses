@@ -11,7 +11,7 @@ export default function NotificationModal() {
     }
 
     return (
-        <Modal backdrop="blur" size="xs"
+        <Modal className="dark" backdrop="blur" size="xs"
             isOpen={isOpen} onClose={() => handleNotificationClose()}
             placement="top-center"
         >
