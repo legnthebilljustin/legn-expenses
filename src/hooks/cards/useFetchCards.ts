@@ -31,7 +31,7 @@ export const useFetchCards = (): ReturnType => {
             const cards = [] as CardDetailsType[]
 
             data.docs.forEach(doc => {
-                const { name, billingDay, dueDaysAfterBilling, color } = doc.data()
+                const { name, billingDay, color } = doc.data()
                 const result: DueDatesType = getBillingAndDueDate(billingDay, 20)
                 
                 cards.push({

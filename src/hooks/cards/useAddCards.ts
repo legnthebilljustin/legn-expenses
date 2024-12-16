@@ -22,7 +22,7 @@ export const useAddCards = (): ReturnType => {
         color: ""
     })
     const [isFormSubmitted, setIsFormSubmitted] = useState(false)
-    const { setErrors, resetError } = useErrorHandler()
+    const { resetError } = useErrorHandler()
     const dispatch = useDispatch()
 
     const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
