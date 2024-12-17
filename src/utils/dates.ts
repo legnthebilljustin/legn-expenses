@@ -1,8 +1,10 @@
 import { CalendarDate } from "@nextui-org/react"
 
 export type DueDatesType = {
-    billingDate: string
+    billingDate?                                                                                                                                       : Date
     paymentDueDate: string
+    billingMonth: number
+    billingDay: number
 }
 
 export const isACalendarDate = (value: CalendarDate) => {
@@ -51,9 +53,10 @@ export const getBillingAndDueDate = (
         paymentDueDate = new Date(billingDate)
         paymentDueDate.setDate(billingDate.getDate() + dueDaysAfterBilling)
     }
-    
+
     return { 
-        billingDate: billingDate.toDateString(), 
-        paymentDueDate: paymentDueDate.toDateString() 
+        paymentDueDate: paymentDueDate.toDateString(),
+        billingDay: billingDay,
+        billingMonth: billingDate.getMonth() + 1
     }
 }

@@ -13,7 +13,11 @@ import { ExpensesFormInputGroupType } from "@/types/expenses"
 import { useErrorHandler } from "../useErrorHandler"
 import { isACalendarDate } from "@/utils/dates"
 import { RootState } from "@/state/store"
+import { CardDetailsType } from "@/types/cards"
 
+type Props = {
+    creditCardsList: CardDetailsType[]
+}
 
 type ReturnType = {
     formData: ExpensesFormInputGroupType[]
@@ -21,12 +25,13 @@ type ReturnType = {
     isSubmittingForm: boolean
     handleDateInputChange: (date: CalendarDate) => void
     handleInputChange: (event: ChangeEvent<HTMLInputElement>, index: number) => void
+    handleCardSelectionInputChange: (event: ChangeEvent<HTMLSelectElement>, index: number) => void
     addFormDataItem: () => void
     removeFormDataItem: (indexToRemove: number) => void
     handleExpensesFormSubmit: () => void
 }
 
-export const useAddExpenses = (): ReturnType => {
+export const useAddExpenses = ({ creditCardsList }: Props): ReturnType => {
     const { uid } = useSelector((state: RootState) => state.auth)
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
     const [formData, setFormData] = useState<ExpensesFormInputGroupType[]>([])
@@ -49,6 +54,7 @@ export const useAddExpenses = (): ReturnType => {
             itemName: "",
             paymentMethod: "",
             cardId: "",
+            card: null,
             purchaseDate: parsedPurchaseDate
         }
 
@@ -72,16 +78,30 @@ export const useAddExpenses = (): ReturnType => {
         setPurchaseDate(date)
     }
 
+    const handleCardSelectionInputChange = useCallback((event: ChangeEvent<HTMLSelectElement>, index: number) => {
+        const { name, value } = event.target
+        
+        checkEmptyNameAndValue(name, value)
+        const card = searchCardById(value)
+
+        const cardDetails = {
+            name: card?.name, color: card?.color
+        }
+
+        const updatedFormData = [...formData]
+        updatedFormData[index] = {
+            ...updatedFormData[index],
+            card: cardDetails,
+            cardId: value
+        }
+
+        setFormData(updatedFormData)
+    }, [formData, setFormData])
+
     const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target
         
-        if (name === undefined || value === undefined) {
-            throw new Error("Input element is missing a `name` or a `value` attribute.")
-        }
-
-        if (value === "") {
-            throw new Error("Cannot have an empty value.")
-        }
+        checkEmptyNameAndValue(name, value)
 
         const updatedFormData = [...formData]
 
@@ -93,7 +113,22 @@ export const useAddExpenses = (): ReturnType => {
         setFormData(updatedFormData)
     }, [formData, setFormData])
 
+    const searchCardById = (value: string): CardDetailsType | undefined => {
+        return creditCardsList.find(card => card.id === value)
+    }   
+
+    const checkEmptyNameAndValue = (name: any, value: any) => {
+        if (name === undefined || value === undefined) {
+            throw new Error("Input element is missing a `name` or a `value` attribute.")
+        }
+
+        if (value === "") {
+            throw new Error("Cannot have an empty value.")
+        }
+    }
+
     const handleExpensesFormSubmit = useCallback(async() => {
+
         resetError()
         if (!formData.length || purchaseDate === null || uid === null) {
             dispatch(setErrorDetails({
@@ -143,5 +178,6 @@ export const useAddExpenses = (): ReturnType => {
         addFormDataItem,
         removeFormDataItem,
         handleExpensesFormSubmit,
+        handleCardSelectionInputChange
     }
 }
