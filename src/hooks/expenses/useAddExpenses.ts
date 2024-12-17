@@ -105,16 +105,6 @@ export const useAddExpenses = ({ creditCardsList }: Props): ReturnType => {
 
         const updatedFormData = [...formData]
 
-        let card: CardDetailsType | {} = {}
-        if (name === "cardId") {
-            
-            const searched = searchCardById(value)
-            if (!searched) {
-                return false
-            }
-            card = searched
-        }
-
         updatedFormData[index] = {
             ...updatedFormData[index],
             [name]: name === "price" ? parseFloat(value) : value
