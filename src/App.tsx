@@ -1,5 +1,5 @@
 
-import { NotificationModal, NavigationBar } from "./components"
+import { NotificationModal, NavigationBar, ConfirmActionModal } from "./components"
 import ErrorModal from "./components/shared/ErrorModal"
 import { Outlet, useNavigate } from "react-router-dom"
 import { useEffect } from "react"
@@ -24,6 +24,7 @@ function App() {
 				<Outlet />
 			</div>
 
+			<ConfirmActionModal />
 			<NotificationModal />
 			<ErrorModal />
 		</main>
