@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore/lite"
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore/lite"
 import { firestoreHandler } from "../firebase/firestoreService"
 import db from "../firebase/config"
 import { BASE_PATH, COLLECTIONS } from "../firebase/collections"
@@ -36,5 +36,17 @@ export const getCardPaymentByBillingDate = async(userUid: string, cardId: string
 
         const result = await getDocs(paymentQuery)
         return result.docs
+    })
+}
+
+export const addPaymentToCard = async(userUid: string, cardId: string, billingMonth: number, billingDay: number) => {
+    return firestoreHandler(async() => {
+        const path = `${BASE_PATH + userUid}/${COLLECTIONS.CARDS}/${cardId}/${COLLECTIONS.PAYMENTS}`
+        return await addDoc(
+            collection(db, path), {
+                billingMonth, billingDay, 
+                createdAt: serverTimestamp()
+            }
+        )
     })
 }

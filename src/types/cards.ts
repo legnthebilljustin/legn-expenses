@@ -1,10 +1,11 @@
 export type CardDetailsType = {
-    id?: string
+    id: string
     name: string
     billingDay: number
     dueDate?: string
     color: string
     isPaid?: boolean
+    billingMonth: number
 }
 
 export type CardFormInputType = {

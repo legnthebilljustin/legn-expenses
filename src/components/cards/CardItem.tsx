@@ -1,12 +1,25 @@
+import { CardActionProps } from "@/pages/Cards"
+import { CONFIRMATION_TYPES } from "@/state/confirmationSlice"
 import { CardDetailsType } from "@/types/cards"
-import { Button, Card, CardBody, Chip, Tooltip,  } from "@nextui-org/react"
+import { Button, Card, CardBody, Chip, Tooltip } from "@nextui-org/react"
 
 type Props = {
     card: CardDetailsType | any
+    onAction: Function
 }
 
-export default function CardItem({ card }: Props) {
+export default function CardItem({ card, onAction }: Props) {
     const isPaid = card.isPaid
+    const handleMarkAsPaid = () => {
+
+        const dataToEmit = {
+            type: CONFIRMATION_TYPES.ACTION,
+            card: card
+        } as CardActionProps
+
+        onAction(dataToEmit)
+    }
+
     return <>
         <Card className="px-4 py-2 max-w-[400px]">
             <CardBody>
@@ -31,6 +44,7 @@ export default function CardItem({ card }: Props) {
                         <Tooltip size="sm" key={2} content="Mark as Paid" className="bg-green-600">
                             <Button isIconOnly size="sm" radius="full" className="bg-green-600"
                                 isDisabled={isPaid}
+                                onClick={() => handleMarkAsPaid()}
                             >
                                 <i className='bx bxs-wallet'></i>
                             </Button>

@@ -5,6 +5,7 @@ import NavigationBar from "./shared/NavigationBar"
 import ProtectedRoute from "./shared/ProtectedRoute"
 import PaymentTypeChip from "./shared/PaymentTypeChip"
 import PageHeading from "./shared/PageHeading"
+import ConfirmActionModal from "./shared/ConfirmActionModal"
 
 // expenses
 import ExpensesInputGroup from "./expenses/ExpensesInputGroup"
@@ -29,5 +30,6 @@ export {
     ProtectedRoute,
     CardItem,
     PageHeading,
-    AddCardForm
+    AddCardForm,
+    ConfirmActionModal
 }

@@ -46,8 +46,12 @@ export const useFetchCards = (): ReturnType => {
                     name, color, billingDay,
                     id: doc.id,
                     dueDate: result.paymentDueDate,
-                    isPaid: payment.data?.length ? true : false
+                    isPaid: payment.data?.length ? true : false,
+                    billingMonth: result.billingMonth
                 }
+                /**
+                 * NOTE: billingMonth and billingDay will be used to add a "payment" record to a card
+                 */
             })
         )
         
