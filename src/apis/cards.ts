@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, query, serverTimestamp, where } from "firebase/firestore/lite"
+import { addDoc, collection, getDocs, limit, query, serverTimestamp, where } from "firebase/firestore/lite"
 import { firestoreHandler } from "../firebase/firestoreService"
 import db from "../firebase/config"
 import { BASE_PATH, COLLECTIONS } from "../firebase/collections"
@@ -31,7 +31,8 @@ export const getCardPaymentByBillingDate = async(userUid: string, cardId: string
         const paymentQuery = query(
                     paymentsRef, 
                     where("billingMonth", "==", billingMonth),
-                    where("billingDay", "==", billingDay)
+                    where("billingDay", "==", billingDay),
+                    limit(1)
                 )
 
         const result = await getDocs(paymentQuery)
