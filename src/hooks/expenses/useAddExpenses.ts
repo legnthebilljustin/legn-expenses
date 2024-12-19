@@ -149,7 +149,7 @@ export const useAddExpenses = ({ creditCardsList }: Props): ReturnType => {
 
             // gotta know how this will catch errors
             // also there should be a fallback or error logs in case below function fails for some reason
-            await findAndUpdateExpensesOverview(overviewUpdateData)
+            await findAndUpdateExpensesOverview(uid, overviewUpdateData)
 
             dispatch(setNotificationMessage("New expenses has been added."))
             dispatch(openNotification())

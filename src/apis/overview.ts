@@ -1,44 +1,78 @@
-import { collection, doc, getDocs, increment, query, QuerySnapshot, setDoc, updateDoc, where, writeBatch } from "firebase/firestore/lite"
+import { addDoc, collection, doc, getDocs, increment, limit, query, QuerySnapshot, setDoc, updateDoc, where, writeBatch } from "firebase/firestore/lite"
 import { firestoreHandler } from "../firebase/firestoreService"
 import db from "../firebase/config"
 import { UpdateExpensesOverviewFields } from "@/types/overviews"
-import { COLLECTIONS } from "@/firebase/collections"
+import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
 
 const USER_ID = "Txd6N06oq8dOoQWP3fTc"
 
-export const findAndUpdateExpensesOverview = async(updateData: UpdateExpensesOverviewFields) => {
+export const findAndUpdateExpensesOverview = async(userUid: string, formData: UpdateExpensesOverviewFields) => {
     return firestoreHandler(async() => {
-        const { data } = await findExpensesOverview("expenses")
-        if (data?.empty) {
-            throw new Error("No matching documents found.")
-        }
+        const today = new Date()
+        const month = today.getMonth() + 1
+        const year = today.getFullYear()
+        const result = await getCurrentMonthOverview(userUid, year, month)
         
-        if (data?.docs) {
-            await updateExpensesOverview(data.docs[0].id, updateData)
+        if (result.data === null) {
+            return await createCurrentMonthOverview(userUid, formData, year, month)
         }
+
+        const docId = result.data?.id
+
+        if (docId) {
+            return await updateCurrentMonthOverview(userUid, docId, formData)
+        }
+
+        throw new Error("Unable to update this month's overview.");
     })
 }
 
-const findExpensesOverview = async(fieldName: string) => {
+/**
+ * get overview document for the currenth month
+ * @returns 
+ */
+const getCurrentMonthOverview = async(userUid: string, year: number, month: number) => {
     return firestoreHandler(async() => {
-        const expensesRef = collection(db, COLLECTIONS.OVERVIEW)
-        const q = query(expensesRef, where("name", "==", fieldName))
+        
+        const overviewCollection = collection(db, `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`)
+        const overviewQuery = query(overviewCollection, 
+                where("year", "==", year),
+                where("month", "==", month),
+                limit(1)
+            )
 
-        const querySnapshot = await getDocs(q)
-        return querySnapshot
+        const querySnapshot = await getDocs(overviewQuery)
+        
+        const result = querySnapshot.docs.length ? querySnapshot.docs[0] : null
+        return result
     })
 }
 
-const updateExpensesOverview = async(docId: string, updateData: UpdateExpensesOverviewFields) => {
+const createCurrentMonthOverview = async(userUid: string, monthlyOverviewData: UpdateExpensesOverviewFields, year: number, month: number) => {
     return firestoreHandler(async() => {
-        const docRef = doc(db, COLLECTIONS.OVERVIEW, docId)
+        const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+        const overviewRef = await addDoc(collection(db, path), {
+            month: month,
+            year: year,
+            amount: monthlyOverviewData.amount || 0,
+            transactions: monthlyOverviewData.transactions || 0
+        })
+
+        return overviewRef
+    })
+}
+
+const updateCurrentMonthOverview = async(userUid: string, docId: string, updateData: UpdateExpensesOverviewFields) => {
+    return firestoreHandler(async() => {
+        const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+        const docRef = doc(db, path, docId)
 
         await updateDoc(docRef, {
             amount: increment(updateData.amount),
             transactions: increment(updateData.transactions)
         })
     })
-}
+} 
 
 export const migrateMonthlyExpenses = async() => {
     const expensesSnapshot = await getMonthAndYearExpenses(10, 2024)

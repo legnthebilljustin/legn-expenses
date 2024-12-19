@@ -32,7 +32,7 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
         <div className="flex my-3">
             <Input type="number" label="Price" size="sm"
                 className="max-w-[100px] mr-2"
-                name="price"
+                name="price" id="price"
                 placeholder="0"
                 value={item.price.toString()}
                 onChange={(event) => onChange(event, index)}
@@ -40,14 +40,14 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
             />
             <Input type="text" label="Item Name" size="sm"
                 className="max-w-[300px] mr-2"
-                name="itemName"
+                name="itemName" id="itemName"
                 value={item.itemName}
                 placeholder="Item name..."
                 onChange={(event) => onChange(event, index)}
                 isRequired
             />
             <Select label="Payment Method" placeholder="Select..." size="sm"
-                className="max-w-[150px] mr-2" name="paymentMethod"
+                className="max-w-[150px] mr-2" name="paymentMethod" id="paymentMethod"
                 value={item.paymentMethod}
                 onChange={(event) => handlePaymentMethodFieldChange(event)}
                 isRequired
@@ -58,7 +58,7 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
             </Select>
             <Select label="Select Card" size="sm"
                 className="max-w-[150px]" name="cardId"
-                placeholder="Select..."
+                placeholder="Select..." id="cardId"
                 onChange={(event) => onCardSelectChange(event, index)}
                 isDisabled={!enableCardSelection}
             >
