@@ -17,8 +17,12 @@ export default function PaymentTypeChip({ paymentType, card }: Props) {
 
     return <Chip size="sm" radius="sm"
                 className="text-white-500"
-                style={{ backgroundColor: card.color || "transparent", maxWidth: 200 }}
+                style={{ 
+                    backgroundColor: card.color || "transparent", 
+                }}
             >
-                <span className="truncate">{ card.name || "Card" }</span>
+                <div className="max-w-[120px] truncate">
+                    { card?.name || "Card" }
+                </div>
             </Chip>
 }

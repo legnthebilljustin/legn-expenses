@@ -24,7 +24,7 @@ export default function ExpensesTable({ expenses }: Props) {
         <TableBody>
             {expenses.map((item: ExpensesItemType) => (
                 <TableRow key={item.id}>
-                    <TableCell width="60%">{ item.itemName }</TableCell>
+                    <TableCell>{ item.itemName }</TableCell>
                     <TableCell width="20%">
                         <PaymentTypeChip paymentType={item.paymentMethod} 
                             card={item.card} 
