@@ -1,24 +1,55 @@
 import { GroupedExpensesType } from "@/types/expenses"
 import ExpensesTable from "./ExpensesTable"
+import { useFetchExpenses } from "@/hooks"
+import { useDispatch } from "react-redux"
+import { Button, Spinner } from "@nextui-org/react"
+import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 
-type Props = {
-    groupedExpenses: GroupedExpensesType[]
-}
+export default function ExpensesList() {
+    const {
+        expenses,
+        isLoading,
+        isLoadingAdditional,
+        loadMoreData,
+        errors
+    } = useFetchExpenses()
+    const dispatch = useDispatch()
 
-export default function ExpensesList({ groupedExpenses }: Props) {
-    if (!groupedExpenses.length) {
-        return "No grouped expenses provided."
+    if (isLoading) {
+        return <Spinner label="Getting your transactions..." color="primary" />
     }
+
+    if (errors) {
+        dispatch(setErrorDetails({
+            message: errors?.message || "Unable to fetch list of expenses.",
+            code: errors.code || 500
+        }))
+        dispatch(openErrorModal())
+    }
+
+    if (!expenses.length) {
+        return <div className="text-center mt-8">No expenses found.</div>
+    }
+
     return (
-        <div>
-            {groupedExpenses.map((group: GroupedExpensesType, index: number) => (
-            <div key={index}>
-                <div className="date text-xs font-bold mb-2 mt-4 uppercase text-gray-400">{ group.purchaseDate }</div>
-                <ExpensesTable expenses={group.expenses} />
+        <>
+            <div className="max-w-[700px]">
+                {expenses.map((group: GroupedExpensesType, index: number) => (
+                    <div key={index}>
+                        <div className="date text-xs font-bold mb-2 mt-4 uppercase text-gray-400">{ group.purchaseDate }</div>
+                        <ExpensesTable expenses={group.expenses} />
+                    </div>
+                ))}
+
+                <div className="flex my-4 justify-center">
+                    <Button size="sm" color="primary"
+                        onClick={loadMoreData}
+                        isLoading={isLoadingAdditional}
+                    >
+                        Next
+                    </Button>
+                </div>
             </div>
-        ))}
-        </div>
-        
-        
+        </>
     )
 }

@@ -11,6 +11,7 @@ import ConfirmActionModal from "./shared/ConfirmActionModal"
 import ExpensesInputGroup from "./expenses/ExpensesInputGroup"
 import ExpensesTable from "./expenses/ExpensesTable"
 import ExpensesList from "./expenses/ExpensesList"
+import AddExpenses from "./expenses/AddExpenses"
 // dashboard
 
 // cards
@@ -25,7 +26,7 @@ export {
     ExpensesInputGroup,
     ExpensesTable,
     ExpensesList,
-
+    AddExpenses,
     NavigationBar,
     ProtectedRoute,
     CardItem,
