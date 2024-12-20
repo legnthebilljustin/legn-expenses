@@ -27,11 +27,14 @@ export const addCard = async(cardFormData: CardFormInputType, userUid: string) =
 export const getCardPaymentByBillingDate = async(userUid: string, cardId: string, billingMonth: number, billingDay: number) => {
     return firestoreHandler(async() => {
         const path = `${BASE_PATH + userUid}/${COLLECTIONS.CARDS}/${cardId}/${COLLECTIONS.PAYMENTS}/`
+        const today = new Date()
+        const year = today.getFullYear()
         const paymentsRef = collection(db, path)
         const paymentQuery = query(
                     paymentsRef, 
                     where("billingMonth", "==", billingMonth),
                     where("billingDay", "==", billingDay),
+                    where("billingYear", "==", year),
                     limit(1)
                 )
 
@@ -43,9 +46,12 @@ export const getCardPaymentByBillingDate = async(userUid: string, cardId: string
 export const addPaymentToCard = async(userUid: string, cardId: string, billingMonth: number, billingDay: number) => {
     return firestoreHandler(async() => {
         const path = `${BASE_PATH + userUid}/${COLLECTIONS.CARDS}/${cardId}/${COLLECTIONS.PAYMENTS}`
+        const today = new Date()
+        const year = today.getFullYear()
         return await addDoc(
             collection(db, path), {
-                billingMonth, billingDay, 
+                billingMonth, billingDay,
+                billingYear: year,
                 createdAt: serverTimestamp()
             }
         )
