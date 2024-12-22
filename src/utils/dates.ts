@@ -36,27 +36,30 @@ export const getBillingAndDueDate = (
     const currentMonth = today.getMonth();
 
     const generateBillingDate = (month: number): Date => new Date(currentYear, month, billingDay)
-
+    let dueDate = "-"
+    let billingMonth = currentMonth - 1
     /**
      * determine last month's billing and payment due dates by default
      * since it will be used to compare today's date to determine
      * which billing and payment cycle should be returned
      */
-    let billingDate = generateBillingDate(currentMonth - 1)
-    let paymentDueDate = new Date(billingDate)
-    paymentDueDate.setDate(billingDate.getDate() + dueDaysAfterBilling)
+    const currentBillingDate = generateBillingDate(currentMonth)
+    // let lastBillingDate = generateBillingDate(currentMonth - 1)
+    // let lastPaymentDueDate = new Date(lastBillingDate)
+    // lastPaymentDueDate.setDate(lastBillingDate.getDate() + dueDaysAfterBilling)
+    // lastPaymentDueDate.setHours(23, 59, 59, 999)
+    
+    if (today > currentBillingDate) {
+        const currentDueDate = new Date(currentBillingDate)
+        currentDueDate.setDate(currentBillingDate.getDate() + dueDaysAfterBilling)
 
-    // check if today's date exceeds last payment due date
-    if (today > paymentDueDate) {
-        billingDate = generateBillingDate(currentMonth)
-
-        paymentDueDate = new Date(billingDate)
-        paymentDueDate.setDate(billingDate.getDate() + dueDaysAfterBilling)
+        dueDate = currentDueDate.toDateString()
+        billingMonth = currentBillingDate.getMonth() + 1
     }
 
     return { 
-        paymentDueDate: paymentDueDate.toDateString(),
+        paymentDueDate: dueDate,
         billingDay: billingDay,
-        billingMonth: billingDate.getMonth() + 1
+        billingMonth: billingMonth
     }
 }
