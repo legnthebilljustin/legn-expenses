@@ -1,5 +1,5 @@
 export function convertToCurrency(amount: number) {
     if (typeof amount === "number") {
-        return amount.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        return `Php ${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
     }
 }
