@@ -12,7 +12,9 @@ import ExpensesInputGroup from "./expenses/ExpensesInputGroup"
 import ExpensesTable from "./expenses/ExpensesTable"
 import ExpensesList from "./expenses/ExpensesList"
 import AddExpenses from "./expenses/AddExpenses"
+
 // dashboard
+import MetricsCard from "./dashboard/MetricsCard"
 
 // cards
 import CardItem from "./cards/CardItem"
@@ -22,7 +24,7 @@ export {
     ErrorModal,
     NotificationModal,
     PaymentTypeChip,
-
+    MetricsCard,
     ExpensesInputGroup,
     ExpensesTable,
     ExpensesList,
