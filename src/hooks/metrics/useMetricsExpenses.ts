@@ -1,5 +1,5 @@
 import { getExpensesByDateRange } from "@/apis/expenses"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 type ExpensesMetricsType = {
     amount: number
@@ -49,10 +49,6 @@ export const useMetricsExpenses = (userUid: string | null) => {
             transactions: totalTransactions
         })
         setIsLoading(false)
-    }
-
-    const getOverAllSummary = async() => {
-
     }
 
     return {
