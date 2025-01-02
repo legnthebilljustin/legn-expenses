@@ -72,7 +72,23 @@ const updateCurrentMonthOverview = async(userUid: string, docId: string, updateD
             transactions: increment(updateData.transactions)
         })
     })
-} 
+}
+
+export const getAllExpensesOverviewApi = async(userUid: string) => {
+    if (typeof userUid !== "string") {
+        throw "Invalid parameter provided."
+    }
+
+    return firestoreHandler(async() => {
+        const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+        const overviewCollection = collection(db, path)
+        const overviewQuery = query(overviewCollection)
+
+        const querySnapshot = await getDocs(overviewQuery)
+        const result = querySnapshot.docs.length ? querySnapshot.docs : null
+        return result
+    })
+}
 
 export const migrateMonthlyExpenses = async() => {
     const expensesSnapshot = await getMonthAndYearExpenses(10, 2024)

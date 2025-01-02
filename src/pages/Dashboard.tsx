@@ -1,7 +1,7 @@
 import { MetricsCard, PageHeading } from "@/components"
 import { useMetricsExpenses } from "@/hooks"
 import { RootState } from "@/state/store"
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
+import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
 
 import { useSelector } from "react-redux"
 
@@ -9,12 +9,13 @@ export default function Dashboard() {
     const { uid } = useSelector((state: RootState) => state.auth)
     
     const {
-        expensesMetrics,
+        currentMonthExpensesMetrics,
+        totalExpensesMetrics,
         isLoading
     } = useMetricsExpenses(uid)
 
     if (isLoading) {
-        return 
+        return <Spinner label="Preparing your metrics..." />
     }
 
     return (
@@ -23,12 +24,12 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 items-start mt-8">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <MetricsCard title="Month to Date"
-                        amount={expensesMetrics?.amount || 0}
-                        transactions={expensesMetrics?.transactions || 0}
+                        amount={currentMonthExpensesMetrics?.amount || 0}
+                        transactions={currentMonthExpensesMetrics?.transactions || 0}
                     />
                     <MetricsCard title="Overall Total"
-                        amount={127002.28}
-                        transactions={128}
+                        amount={totalExpensesMetrics?.amount || 0}
+                        transactions={totalExpensesMetrics?.transactions || 0}
                     />
                 </div>
                 <div>
