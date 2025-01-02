@@ -1,9 +1,15 @@
 import { getExpensesByDateRange } from "@/apis/expenses"
+import { getAllExpensesOverviewApi } from "@/apis/overview"
 import { useEffect, useState } from "react"
 
 type ExpensesMetricsType = {
     amount: number
     transactions: number
+}
+type ReturnType = {
+    currentMonthExpensesMetrics: ExpensesMetricsType
+    totalExpensesMetrics: ExpensesMetricsType
+    isLoading: boolean
 }
 
 const initialState = {
@@ -11,13 +17,20 @@ const initialState = {
     transactions: 0
 }
 
-export const useMetricsExpenses = (userUid: string | null) => {
-    const [expensesMetrics, setExpensesMetrics] = useState<ExpensesMetricsType>(initialState)
+export const useMetricsExpenses = (userUid: string | null): ReturnType => {
+    const [currentMonthExpensesMetrics, setCurrentMonthExpensesMetrics] = useState<ExpensesMetricsType>(initialState)
+    const [totalExpensesMetrics, setTotalExpensesMetrics] = useState<ExpensesMetricsType>(initialState)
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         if (userUid) {
-            getMonthToDateSummary(userUid)
+            loadInitialData(userUid)
+        }
+        async function loadInitialData(userUid: string) {
+            await getMonthToDateSummary(userUid)
+            await getAllExpensesOverview(userUid)
+
+            setIsLoading(false)
         }
     }, [userUid])
 
@@ -44,15 +57,39 @@ export const useMetricsExpenses = (userUid: string | null) => {
             
         })
 
-        setExpensesMetrics({
+        setCurrentMonthExpensesMetrics({
             amount: totalAmount,
             transactions: totalTransactions
         })
-        setIsLoading(false)
+    }
+
+    const getAllExpensesOverview = async(userUid: string) => {
+        const { data } = await getAllExpensesOverviewApi(userUid);
+
+        let totalAmount = 0
+        let totalTransactions = 0
+        
+        if (data) {
+            data?.map((doc) => {
+                const { amount, transactions } = doc.data()
+
+                if (typeof amount === "number" && typeof transactions === "number") {
+                    totalAmount += amount
+                    totalTransactions += transactions
+                }
+                // else here for invalid overview key types
+            })
+        }
+
+        setTotalExpensesMetrics({
+            amount: totalAmount,
+            transactions: totalTransactions
+        })
     }
 
     return {
-        expensesMetrics,
+        currentMonthExpensesMetrics,
+        totalExpensesMetrics,
         isLoading
     }
 }
