@@ -2,6 +2,7 @@ import { useErrorHandler } from "./useErrorHandler";
 import { useFetchExpenses } from "./expenses/useFetchExpenses";
 import { useAddExpenses } from "./expenses/useAddExpenses";
 import { useFetchCards } from "./cards/useFetchCards";
+import { useEditExpenses } from "./expenses/useEditExpenses";
 import { useAddCards } from "./cards/useAddCards";
 import { useGetExpensesMetrics } from "./expenses/useGetExpensesMetrics";
 import { usePayStatement } from "./cards/usePayStatement";
@@ -17,5 +18,6 @@ export {
     useGetExpensesMetrics,
     usePayStatement,
     useFetchCryptoList,
-    useCryptoAssetFormData
+    useCryptoAssetFormData,
+    useEditExpenses
 }

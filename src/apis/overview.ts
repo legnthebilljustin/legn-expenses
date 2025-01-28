@@ -4,6 +4,7 @@ import db from "../firebase/config"
 import { UpdateExpensesOverviewFields } from "@/types/overviews"
 import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
 
+// TODO: This needs clean up and refactor
 const USER_ID = "Txd6N06oq8dOoQWP3fTc"
 
 export const findAndUpdateExpensesOverview = async(userUid: string, formData: UpdateExpensesOverviewFields) => {
