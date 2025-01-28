@@ -1,9 +1,11 @@
-import { GroupedExpensesType } from "@/types/expenses"
+import { EditExpensesDetailsType, GroupedExpensesType } from "@/types/expenses"
 import ExpensesTable from "./ExpensesTable"
 import { useFetchExpenses } from "@/hooks"
 import { useDispatch } from "react-redux"
 import { Button, Spinner } from "@nextui-org/react"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import EditExpensesForm from "./EditExpensesForm"
+import { useCallback, useState } from "react"
 
 export default function ExpensesList() {
     const {
@@ -14,7 +16,18 @@ export default function ExpensesList() {
         loadNextPage,
         isAllExpensesFetched
     } = useFetchExpenses()
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [editExpensesItemData, setEditExpensesItemData] = useState<EditExpensesDetailsType | null>(null)
+
     const dispatch = useDispatch()
+
+    const onEditExpenseItem = useCallback((data: EditExpensesDetailsType) => {
+        if (data.id && data.itemName && data.price) {
+            setEditExpensesItemData(data)
+            setIsEditModalOpen(true)
+        }
+        
+    }, [dispatch])
 
     if (isLoading) {
         return <Spinner label="Getting your transactions..." color="primary" />
@@ -34,11 +47,13 @@ export default function ExpensesList() {
 
     return (
         <>
-            <div className="max-w-[700px]">
+            <div className="max-w-[800px]">
                 {expenses.map((group: GroupedExpensesType, index: number) => (
                     <div key={index}>
                         <div className="date text-xs font-bold mb-2 mt-4 uppercase text-gray-400">{ group.purchaseDate }</div>
-                        <ExpensesTable expenses={group.expenses} />
+                        <ExpensesTable expenses={group.expenses} 
+                            onEditExpenseItem={onEditExpenseItem}
+                        />
                     </div>
                 ))}
 
@@ -52,6 +67,14 @@ export default function ExpensesList() {
                     </Button>
                 </div>
             </div>
+
+            { isEditModalOpen && editExpensesItemData && 
+                <EditExpensesForm 
+                    isOpen={isEditModalOpen}
+                    expensesItem={editExpensesItemData}
+                    onModalClose={() => setIsEditModalOpen(false)}
+                />
+            }
         </>
     )
 }

@@ -26,3 +26,9 @@ export type ExpensesCardInfoType = {
     name: string | undefined
     color: string | undefined
 }
+
+export type EditExpensesDetailsType = {
+    id: string
+    itemName: string
+    price: number
+}

@@ -20,17 +20,4 @@ export default defineConfig({
         },
     },
     plugins: [react()],
-    server: {
-        /**
-         * this proxy acts as a middleman, making a request to the local dev server then forwards it to the API:
-         * bypassing same-origin policy which prevents cross-origin requests (CORS issue) during development
-         */
-		proxy: {
-			'/api': {
-				target: 'https://legn-backend-proxy.onrender.com',
-				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, ''),
-			},
-		},
-	},
 });
