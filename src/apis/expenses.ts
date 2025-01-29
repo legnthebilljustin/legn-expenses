@@ -4,11 +4,11 @@ import { firestoreHandler, FirestoreResponse } from "../firebase/firestoreServic
 import { UpdateExpensesOverviewFields } from "@/types/overviews"
 import { EditExpensesDetailsType, ExpensesFormInputGroupType } from "@/types/expenses"
 import { COLLECTIONS } from "@/firebase/collections"
-import { getUserSubCollectionPath } from "@/utils/service"
+import { getUserSubCollectionPath, validateSchemaObject } from "@/utils/service"
 import { COLLECTION_KEYS } from "@/constants/keys"
-import { ExpenseSchema, OverviewSchema } from "@/schema"
-import { FirestoreOverview } from "@/schema/overviewSchema"
+import { ExpenseSchema } from "@/schema"
 import { FirestoreExpense } from "@/schema/expenseSchema"
+import { getOverviewDocument } from "./overview"
 
 export const EXPENSES_LIMIT = 50
 const BASE_PATH = `${COLLECTIONS.USERS}/`
@@ -136,17 +136,13 @@ export const editExpensesItem = async(userUid: string, formData: EditExpensesDet
     return firestoreHandler(async() => {
         try {
             const expensesSnapshot = await getExpensesItem(expensesPath, formData.id)
-            const parsedResult = ExpenseSchema.safeParse(expensesSnapshot)
+            const parsedExpensesData: FirestoreExpense = validateSchemaObject(ExpenseSchema, expensesSnapshot)
 
-            if (!parsedResult.success) {
-                throw new Error("Item in the server does not match the required format.")
-            }
-
-            const { price, purchaseDate } = parsedResult.data
+            const { price, purchaseDate } = parsedExpensesData
             const { month, year } = getPurchaseDateMonthAndYear(purchaseDate as Timestamp)
             const diff = formData.price - price
 
-            const overview = await getOverview(userUid, year, month)
+            const overview = await getOverviewDocument(userUid, year, month)
 
             const expensesDocRef = doc(db, expensesPath, formData.id)
             const overviewDocRef = doc(db, overviewPath, overview.id)
@@ -176,7 +172,7 @@ export const deleteExpensesItem = async(userUid: string, expensesItemUid: string
 
         const { month, year } = getPurchaseDateMonthAndYear(expensesItem.purchaseDate as Timestamp)
 
-        const overview = await getOverview(userUid, year, month)
+        const overview = await getOverviewDocument(userUid, year, month)
 
         const expensesDocRef = doc(db, expensesPath, expensesItemUid)
         const overviewDocRef = doc(db, overviewPath, overview.id)
@@ -191,40 +187,5 @@ export const deleteExpensesItem = async(userUid: string, expensesItemUid: string
 
     } catch (error: any) {
         throw new Error(error.message || "Something went wrong. Cannot delete expenses item.")
-    }
-}
-
-/**
- * TODO: functions below should be in the overview.api 
- * but that file needs to be refactored and cleaned up. transfer when ready
- */
-const getOverview = async(userUid: string, year: number, month: number): Promise<FirestoreOverview & { id: string }> => {
-    const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
-    const collectionRef = collection(db, path)
-    const overviewQuery = query(collectionRef,
-        where("year", "==", year),
-        where("month", "==", month),
-        limit(1)
-    )
-
-    const querySnapshot = await getDocs(overviewQuery)
-
-    if (querySnapshot.empty) {
-        throw new Error("Overview not found.")
-    }
-
-    const parsedResult = OverviewSchema.safeParse(querySnapshot.docs[0].data())
-
-    if (!parsedResult.success) {
-        throw new Error("Overview data and schema mismatch.")
-    }
-
-    const parsed = parsedResult.data
-    return {
-        id: querySnapshot.docs[0].id,
-        month: parsed.month, 
-        year: parsed.year, 
-        transactions: parsed.transactions, 
-        amount: parsed.amount
     }
 }

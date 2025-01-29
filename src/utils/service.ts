@@ -13,11 +13,15 @@ export const zodValidateDateOrTimestamp = () => {
     }, { message: "Invalid date format. Must be a Date or Firestore Timestamp" })
 }
 
-export const validateSchemaData = (schema: z.ZodSchema, data: any): boolean => {
-    const validation = schema.safeParse(data)
+export const validateSchemaObject = <T>(schema: z.ZodSchema, data: unknown): T => {
+    const parsedResult = schema.safeParse(data)
 
-    return validation.success
-}
+    if (!parsedResult.success) {
+        throw new Error("Validation failed due to schema mismatch.")
+    }
+
+    return parsedResult.data
+} 
 
 export const validateSchemaDataArray = (schema: z.ZodSchema, data: any[]): boolean => {
     if (!Array.isArray(data)) {
