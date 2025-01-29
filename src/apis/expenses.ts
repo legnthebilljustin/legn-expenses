@@ -8,6 +8,7 @@ import { getUserSubCollectionPath } from "@/utils/service"
 import { COLLECTION_KEYS } from "@/constants/keys"
 import { ExpenseSchema, OverviewSchema } from "@/schema"
 import { FirestoreOverview } from "@/schema/overviewSchema"
+import { FirestoreExpense } from "@/schema/expenseSchema"
 
 export const EXPENSES_LIMIT = 50
 const BASE_PATH = `${COLLECTIONS.USERS}/`
@@ -111,7 +112,7 @@ const getPurchaseDateMonthAndYear = (date: Timestamp): { month: number, year: nu
     return { month, year }
 }
 
-const getExpensesItem = async(path: string, documentId: string) => {
+const getExpensesItem = async(path: string, documentId: string): Promise<FirestoreExpense> => {
     const docRef = doc(db, path, documentId)
 
     const snapshot = await getDoc(docRef)
@@ -119,7 +120,13 @@ const getExpensesItem = async(path: string, documentId: string) => {
     if (!snapshot.exists()) {
         throw new Error("Expenses item not found.")
     }
-    return snapshot.data()
+
+    const parsed = ExpenseSchema.safeParse(snapshot.data())
+
+    if (!parsed.success) {
+        throw new Error("Item in the server does not match the required format.")
+    }
+    return parsed.data
 }
 
 export const editExpensesItem = async(userUid: string, formData: EditExpensesDetailsType) => {
@@ -158,6 +165,33 @@ export const editExpensesItem = async(userUid: string, formData: EditExpensesDet
             throw new Error(error.message || "Something went wrong. Cannot update expense.")
         }
     })
+}
+
+export const deleteExpensesItem = async(userUid: string, expensesItemUid: string) => {
+    const expensesPath = `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`
+    const overviewPath = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+
+    try {
+        const expensesItem = await getExpensesItem(expensesPath, expensesItemUid)
+
+        const { month, year } = getPurchaseDateMonthAndYear(expensesItem.purchaseDate as Timestamp)
+
+        const overview = await getOverview(userUid, year, month)
+
+        const expensesDocRef = doc(db, expensesPath, expensesItemUid)
+        const overviewDocRef = doc(db, overviewPath, overview.id)
+
+        await runTransaction(db, async(transaction) => {
+            transaction.update(overviewDocRef, {
+                amount: overview.amount - expensesItem.price
+            })
+
+            transaction.delete(expensesDocRef)
+        })
+
+    } catch (error: any) {
+        throw new Error(error.message || "Something went wrong. Cannot delete expenses item.")
+    }
 }
 
 /**
