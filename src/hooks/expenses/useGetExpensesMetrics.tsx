@@ -1,30 +1,31 @@
 import { getExpensesByDateRange } from "@/apis/expenses"
 import { getAllExpensesOverviewApi } from "@/apis/overview"
 import { RootState } from "@/state/store"
-import { ExpensesMetricsType, MonthlyExpensesListType } from "@/types/overviews"
+import { ExpensesMetrics } from "@/types/expenses"
+import { MonthlyExpensesListType } from "@/types/overviews"
 import { formatMonthYear } from "@/utils/dates"
 import { isANumber } from "@/utils/misc"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 
-const expensesMetricsInitialState: ExpensesMetricsType = {
+const expensesMetricsInitialState: ExpensesMetrics = {
     amount: 0,
     transactions: 0
 }
 
 type ReturnType = {
     isLoading: boolean
-    monthToDateExpenses: ExpensesMetricsType
+    monthToDateExpenses: ExpensesMetrics
     monthlyExpensesList: MonthlyExpensesListType[]
-    overAllExpensesData: ExpensesMetricsType
+    overAllExpensesData: ExpensesMetrics
 }
 
 export const useGetExpensesMetrics = (): ReturnType => {
     const { uid } = useSelector((state: RootState) => state.auth)
     const [isLoading, setIsLoading] = useState(true)
-    const [monthToDateExpenses, setMonthToDateExpenses] = useState<ExpensesMetricsType>(expensesMetricsInitialState)
+    const [monthToDateExpenses, setMonthToDateExpenses] = useState<ExpensesMetrics>(expensesMetricsInitialState)
     const [monthlyExpensesList, setMonthlyExpensesList] = useState<MonthlyExpensesListType[]>([])
-    const [overAllExpensesData, setOverAllExpensesData] = useState<ExpensesMetricsType>(expensesMetricsInitialState)
+    const [overAllExpensesData, setOverAllExpensesData] = useState<ExpensesMetrics>(expensesMetricsInitialState)
     
     useEffect(() => {
         if (uid) {

@@ -1,31 +1,26 @@
 import { collection, doc, QueryDocumentSnapshot, getDocs, limit, orderBy, query, startAfter, where, writeBatch, getDoc, Timestamp, runTransaction } from "firebase/firestore/lite"
 import db from "../firebase/config"
-import { firestoreHandler, FirestoreResponse } from "../firebase/firestoreService"
-import { UpdateExpensesOverviewFields } from "@/types/overviews"
-import { EditExpensesDetailsType, ExpensesFormInputGroupType } from "@/types/expenses"
-import { COLLECTIONS } from "@/firebase/collections"
-import { getUserSubCollectionPath, validateSchemaObject } from "@/utils/service"
+import { firestoreHandler } from "../firebase/firestoreService"
+import { EditExpensesDetailsType, ExpensesFormInputGroupType, ExpensesMetrics } from "@/types/expenses"
+import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
+import { validateSchemaObject } from "@/utils/service"
 import { COLLECTION_KEYS } from "@/constants/keys"
 import { ExpenseSchema } from "@/schema"
 import { FirestoreExpense } from "@/schema/expenseSchema"
 import { getOverviewDocument } from "./overview"
 
 export const EXPENSES_LIMIT = 50
-const BASE_PATH = `${COLLECTIONS.USERS}/`
+const BASE_PATH_2 = `${COLLECTIONS.USERS}/`
 
-export const addExpenses = async(
+export const addExpensesAPI = async(
+    userUid: string,
     formData: ExpensesFormInputGroupType[],
-    userUid: string
-): Promise<FirestoreResponse<{
-    data: UpdateExpensesOverviewFields
-    message: string
-    success: boolean
-}>> => {
+): Promise<ExpensesMetrics> => {
+    const path = `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`
 
-    return firestoreHandler(async() => {
-        const userCollectionPath = getUserSubCollectionPath(userUid, `${COLLECTIONS.EXPENSES}`)
+    try {
         const batch = writeBatch(db)
-        const collectionRef = collection(db, userCollectionPath)
+        const collectionRef = collection(db, path)
 
         let totalAmount = 0
 
@@ -35,21 +30,15 @@ export const addExpenses = async(
             batch.set(docRef, item)    
         });
 
-        try {
-            await batch.commit()
+        await batch.commit()
 
-            return {
-                data: {
-                    amount: totalAmount,
-                    transactions: formData.length
-                } as UpdateExpensesOverviewFields,
-                message: "Transactions saved.",
-                success: true
-            }
-        } catch (error) {
-            throw new Error("Failed to save transactions.")
+        return {
+            amount: totalAmount,
+            transactions: formData.length
         }
-    })
+    } catch (error) {
+        throw new Error("Unable to add expenses.")
+    }
 }
 
 export const getExpenses = async(userUid: string) => {
@@ -57,7 +46,7 @@ export const getExpenses = async(userUid: string) => {
     return firestoreHandler(async() => {
         const querySnapshot = await getDocs(
             query(
-                collection(db, `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`),
+                collection(db, `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`),
                 orderBy("purchaseDate", "desc"),
                 limit(EXPENSES_LIMIT)
             )
@@ -73,7 +62,7 @@ export const getAdditionalExpenses = async(
     return firestoreHandler(async() => {
         const querySnapshot = await getDocs(
             query(
-                collection(db, `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`),
+                collection(db, `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`),
                 orderBy("purchaseDate", "desc"),
                 startAfter(snapshot),
                 limit(EXPENSES_LIMIT)
@@ -88,7 +77,7 @@ export const getExpensesByDateRange = async(userUid: string, startDate: any, end
     return firestoreHandler(async() => {
         const querySnapshot = await getDocs(
             query(
-                collection(db, `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`),
+                collection(db, `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`),
                 orderBy(COLLECTION_KEYS.PURCHASE_DATE, "desc"),
                 where(COLLECTION_KEYS.PURCHASE_DATE, ">=", startDate),
                 where(COLLECTION_KEYS.PURCHASE_DATE, "<=", endDate)
@@ -130,8 +119,8 @@ const getExpensesItem = async(path: string, documentId: string): Promise<Firesto
 }
 
 export const editExpensesItem = async(userUid: string, formData: EditExpensesDetailsType) => {
-    const expensesPath = `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`
-    const overviewPath = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+    const expensesPath = `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`
+    const overviewPath = `${BASE_PATH_2 + userUid}/${COLLECTIONS.OVERVIEW}`
 
     return firestoreHandler(async() => {
         try {
@@ -143,6 +132,10 @@ export const editExpensesItem = async(userUid: string, formData: EditExpensesDet
             const diff = formData.price - price
 
             const overview = await getOverviewDocument(userUid, year, month)
+
+            if (overview === null) {
+                throw new Error("Overview document not found.")
+            }
 
             const expensesDocRef = doc(db, expensesPath, formData.id)
             const overviewDocRef = doc(db, overviewPath, overview.id)
@@ -164,8 +157,8 @@ export const editExpensesItem = async(userUid: string, formData: EditExpensesDet
 }
 
 export const deleteExpensesItem = async(userUid: string, expensesItemUid: string) => {
-    const expensesPath = `${BASE_PATH + userUid}/${COLLECTIONS.EXPENSES}`
-    const overviewPath = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+    const expensesPath = `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`
+    const overviewPath = `${BASE_PATH_2 + userUid}/${COLLECTIONS.OVERVIEW}`
 
     try {
         const expensesItem = await getExpensesItem(expensesPath, expensesItemUid)
@@ -173,6 +166,10 @@ export const deleteExpensesItem = async(userUid: string, expensesItemUid: string
         const { month, year } = getPurchaseDateMonthAndYear(expensesItem.purchaseDate as Timestamp)
 
         const overview = await getOverviewDocument(userUid, year, month)
+
+        if (overview === null) {
+            throw new Error("Overview document not found.")
+        }
 
         const expensesDocRef = doc(db, expensesPath, expensesItemUid)
         const overviewDocRef = doc(db, overviewPath, overview.id)

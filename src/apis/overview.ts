@@ -1,31 +1,10 @@
 import { addDoc, collection, doc, getDocs, increment, limit, orderBy, query, updateDoc, where } from "firebase/firestore/lite"
 import { firestoreHandler } from "../firebase/firestoreService"
 import db from "../firebase/config"
-import { UpdateExpensesOverviewFields } from "@/types/overviews"
 import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
 import { FirestoreOverview, OverviewSchema } from "@/schema/overviewSchema"
 import { validateSchemaObject } from "@/utils/service"
-
-export const findAndUpdateExpensesOverview = async(userUid: string, formData: UpdateExpensesOverviewFields) => {
-    return firestoreHandler(async() => {
-        const today = new Date()
-        const month = today.getMonth() + 1
-        const year = today.getFullYear()
-        const result = await getCurrentMonthOverview(userUid, year, month)
-        
-        if (result.data === null) {
-            return await createCurrentMonthOverview(userUid, formData, year, month)
-        }
-
-        const docId = result.data?.id
-
-        if (docId) {
-            return await updateCurrentMonthOverview(userUid, docId, formData)
-        }
-
-        throw new Error("Unable to update this month's overview.");
-    })
-}
+import { ExpensesMetrics } from "@/types/expenses"
 
 export const getAllExpensesOverviewApi = async(userUid: string) => {
     if (typeof userUid !== "string") {
@@ -49,7 +28,10 @@ export const getAllExpensesOverviewApi = async(userUid: string) => {
     })
 }
 
-export const getOverviewDocument = async(userUid: string, year: number, month: number) => {
+export const getOverviewDocument = async(
+    userUid: string, year: number, month: number
+): Promise<FirestoreOverview & { id: string } | null> => {
+
     const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
     const collectionRef = collection(db, path)
     const overviewQuery = query(collectionRef, 
@@ -61,7 +43,11 @@ export const getOverviewDocument = async(userUid: string, year: number, month: n
     const querySnapshot = await getDocs(overviewQuery)
 
     if (querySnapshot.empty) {
-        throw new Error("Overview not found.")
+        /**
+         * DO NOT THROW AN ERROR HERE (see useAddExpenses.ts - handleExpensesFormSubmit())
+         * when adding new expenses, function needs to know if a document exists or not to determine wether to update or create
+         */
+        return null
     }
     const validatedData: FirestoreOverview = validateSchemaObject(OverviewSchema, querySnapshot.docs[0].data())
 
@@ -71,49 +57,17 @@ export const getOverviewDocument = async(userUid: string, year: number, month: n
     }
 }
 
-/**
- * get overview document for the currenth month
- * @returns 
- */
-const getCurrentMonthOverview = async(userUid: string, year: number, month: number) => {
-    return firestoreHandler(async() => {
-        
-        const overviewCollection = collection(db, `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`)
-        const overviewQuery = query(overviewCollection, 
-                where("year", "==", year),
-                where("month", "==", month),
-                limit(1)
-            )
-
-        const querySnapshot = await getDocs(overviewQuery)
-        
-        const result = querySnapshot.docs.length ? querySnapshot.docs[0] : null
-        return result
-    })
+export const createOverview = async(userUid: string, overviewData: FirestoreOverview): Promise<void> => {
+    const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+    await addDoc(collection(db, path), overviewData)
 }
 
-const createCurrentMonthOverview = async(userUid: string, monthlyOverviewData: UpdateExpensesOverviewFields, year: number, month: number) => {
-    return firestoreHandler(async() => {
-        const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
-        const overviewRef = await addDoc(collection(db, path), {
-            month: month,
-            year: year,
-            amount: monthlyOverviewData.amount || 0,
-            transactions: monthlyOverviewData.transactions || 0
-        })
+export const updateOverview = async(userUid: string, docId: string, updateData: ExpensesMetrics): Promise<void> => {
+    const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
+    const docRef = doc(db, path, docId)
 
-        return overviewRef
-    })
-}
-
-const updateCurrentMonthOverview = async(userUid: string, docId: string, updateData: UpdateExpensesOverviewFields) => {
-    return firestoreHandler(async() => {
-        const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
-        const docRef = doc(db, path, docId)
-
-        await updateDoc(docRef, {
-            amount: increment(updateData.amount),
-            transactions: increment(updateData.transactions)
-        })
+    await updateDoc(docRef, {
+        amount: increment(updateData.amount),
+        transactions: increment(updateData.transactions)
     })
 }

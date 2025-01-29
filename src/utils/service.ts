@@ -23,6 +23,21 @@ export const validateSchemaObject = <T>(schema: z.ZodSchema, data: unknown): T =
     return parsedResult.data
 } 
 
+export const validateSchemaArray = <T>(schema: z.ZodSchema, data: unknown): T[] => {
+    if (!Array.isArray(data)) {
+        throw new Error("Data for validation must be an array.")
+    }
+
+    const arraySchema = z.array(schema)
+    const parsedResult = arraySchema.safeParse(data)
+
+    if (!parsedResult.success) {
+        throw new Error("Validation failed due to schema mismatch.")
+    }
+
+    return parsedResult.data
+}
+
 export const validateSchemaDataArray = (schema: z.ZodSchema, data: any[]): boolean => {
     if (!Array.isArray(data)) {
         return false
