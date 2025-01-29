@@ -1,13 +1,18 @@
 import { EditExpensesDetailsType, GroupedExpensesType } from "@/types/expenses"
 import ExpensesTable from "./ExpensesTable"
-import { useFetchExpenses } from "@/hooks"
-import { useDispatch } from "react-redux"
+import { useDeleteExpense, useFetchExpenses } from "@/hooks"
+import { useDispatch, useSelector } from "react-redux"
 import { Button, Spinner } from "@nextui-org/react"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import EditExpensesForm from "./EditExpensesForm"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { CONFIRMATION_TYPES, openConfirmationModal } from "@/state/confirmationSlice"
+import { RootState } from "@/state/store"
+
 
 export default function ExpensesList() {
+    const { actionConfirmed } = useSelector((state: RootState) => state.confirmation)
+
     const {
         expenses,
         isLoading,
@@ -16,8 +21,10 @@ export default function ExpensesList() {
         loadNextPage,
         isAllExpensesFetched
     } = useFetchExpenses()
+    const { isDeleting, deleteExpenseItem } = useDeleteExpense()
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editExpensesItemData, setEditExpensesItemData] = useState<EditExpensesDetailsType | null>(null)
+    const [expenseUidToDelete, setExpenseUidToDelete] = useState<string>("")
 
     const dispatch = useDispatch()
 
@@ -26,8 +33,22 @@ export default function ExpensesList() {
             setEditExpensesItemData(data)
             setIsEditModalOpen(true)
         }
-        
     }, [dispatch])
+
+    const onDeleteItem = useCallback((expenseUid: string) => {
+        setExpenseUidToDelete(expenseUid)
+        dispatch(openConfirmationModal({
+            message: "Are you sure you want to delete this item?",
+            type: CONFIRMATION_TYPES.DELETE
+        }))
+    }, [dispatch])
+
+    useEffect(() => {
+        if (actionConfirmed) {
+            deleteExpenseItem(expenseUidToDelete)
+        }
+    }, [actionConfirmed])
+
 
     if (isLoading) {
         return <Spinner label="Getting your transactions..." color="primary" />
@@ -45,6 +66,10 @@ export default function ExpensesList() {
         return <div className="text-center mt-8">No expenses found.</div>
     }
 
+    if (isDeleting) {
+        return <Spinner label="Processing your delete request..." color="warning" />
+    }
+
     return (
         <>
             <div className="max-w-[800px]">
@@ -53,6 +78,7 @@ export default function ExpensesList() {
                         <div className="date text-xs font-bold mb-2 mt-4 uppercase text-gray-400">{ group.purchaseDate }</div>
                         <ExpensesTable expenses={group.expenses} 
                             onEditExpenseItem={onEditExpenseItem}
+                            onDeleteItem={onDeleteItem}
                         />
                     </div>
                 ))}

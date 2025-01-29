@@ -14,9 +14,10 @@ const columns = [
 type Props = {
     expenses: ExpensesItemType[]
     onEditExpenseItem: (data: EditExpensesDetailsType) => void
+    onDeleteItem: (expenseUid: string) => void
 }
 
-export default function ExpensesTable({ expenses, onEditExpenseItem }: Props) {
+export default function ExpensesTable({ expenses, onEditExpenseItem, onDeleteItem }: Props) {
     return <Table aria-label="expenses-table">
         <TableHeader columns={columns}>
             {(column) => <TableColumn key={column.key} 
@@ -42,7 +43,9 @@ export default function ExpensesTable({ expenses, onEditExpenseItem }: Props) {
                                 price: item.price
                             })}
                         ></i>
-                        {/* <i className='bx bxs-trash text-red-400 cursor-pointer'></i> */}
+                        <i className='bx bxs-trash text-red-400 cursor-pointer'
+                            onClick={() => onDeleteItem(item.id)}
+                        ></i>
                     </TableCell>
                 </TableRow>
             ))}

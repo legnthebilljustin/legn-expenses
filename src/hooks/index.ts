@@ -8,6 +8,7 @@ import { useGetExpensesMetrics } from "./expenses/useGetExpensesMetrics";
 import { usePayStatement } from "./cards/usePayStatement";
 import { useFetchCryptoList } from "./crypto/useFetchCryptoList";
 import { useCryptoAssetFormData } from "./crypto/useCryptoAssetFormData";
+import { useDeleteExpense } from "./expenses/useDeleteExpense";
 
 export {
     useFetchExpenses,
@@ -19,5 +20,6 @@ export {
     usePayStatement,
     useFetchCryptoList,
     useCryptoAssetFormData,
-    useEditExpenses
+    useEditExpenses,
+    useDeleteExpense
 }
