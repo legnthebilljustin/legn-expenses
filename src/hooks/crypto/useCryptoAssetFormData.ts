@@ -1,10 +1,10 @@
 import { postCryptoAsset } from "@/apis/crypto"
-import { CryptoAssetFormData, CryptoHoldingSchema } from "@/schema/cryptoHoldingSchema"
+import { CryptoAssetFormData, CryptoHoldingSchema, FirestoreCryptoHoldingSchema } from "@/schema/cryptoHoldingSchema"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { CryptoWithPriceType } from "@/types/crypto"
 import { isACalendarDate } from "@/utils/dates"
-import { validateSchemaData } from "@/utils/service"
+import { validateSchemaObject } from "@/utils/service"
 import { CalendarDate } from "@nextui-org/react"
 import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
@@ -80,25 +80,16 @@ export const useCryptoAssetFormData = (cryptoList: CryptoWithPriceType[]) => {
     const handleFormSubmit = async(userUid: string) => {
         setIsSubmittingForm(true)
 
-        const isSchemaValidated = validateSchemaData(CryptoHoldingSchema, formData)
-        if (!isSchemaValidated) {
-            dispatch(setErrorDetails({
-                message: "Cannot process crypto asset form submission due to schema mismatch.",
-                code: 400
-            }))
-            dispatch(openErrorModal())
-            return
-        }
-
         try {
-            await postCryptoAsset(userUid, formData)
+            const parsedData: FirestoreCryptoHoldingSchema = validateSchemaObject(CryptoHoldingSchema, formData)
+            await postCryptoAsset(userUid, parsedData)
             dispatch(setNotificationMessage("New crypto asset have been added."))
             dispatch(openNotification())
             setFormData(initialState)
             
-        } catch(error) {
+        } catch(error: any) {
             dispatch(setErrorDetails({
-                message: "Unable to add new asset.",
+                message: error.message || "Unable to add new asset.",
                 code: 400
             }))
             dispatch(openErrorModal())
