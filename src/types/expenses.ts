@@ -32,3 +32,8 @@ export type EditExpensesDetailsType = {
     itemName: string
     price: number
 }
+
+export type ExpensesMetrics = {
+    amount: number,
+    transactions: number
+}

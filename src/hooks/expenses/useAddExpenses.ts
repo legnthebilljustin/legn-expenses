@@ -4,18 +4,16 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
-import { findAndUpdateExpensesOverview } from "@/apis/overview"
-import { addExpenses } from "@/apis/expenses"
-
-import { UpdateExpensesOverviewFields } from "@/types/overviews"
-import { ExpensesFormInputGroupType } from "@/types/expenses"
-
+import { createOverview, getOverviewDocument, updateOverview } from "@/apis/overview"
+import { addExpensesAPI } from "@/apis/expenses"
+import { ExpensesFormInputGroupType, ExpensesMetrics } from "@/types/expenses"
 import { useErrorHandler } from "../useErrorHandler"
 import { isACalendarDate } from "@/utils/dates"
 import { RootState } from "@/state/store"
 import { CardsForDropdownType } from "@/types/cards"
-import { validateSchemaDataArray } from "@/utils/service"
-import { ExpenseSchema } from "@/schema"
+import { validateSchemaArray, validateSchemaObject } from "@/utils/service"
+import { ExpenseSchema, OverviewSchema } from "@/schema"
+import { FirestoreOverview } from "@/schema/overviewSchema"
 
 type Props = {
     creditCardsList: CardsForDropdownType[]
@@ -23,12 +21,16 @@ type Props = {
 
 export const useAddExpenses = ({ creditCardsList }: Props) => {
     const { uid } = useSelector((state: RootState) => state.auth)
-    // see comment in `hooks/crypto/useCryptoAssetFormData.ts`
+    /**
+     * see comment in `hooks/crypto/useCryptoAssetFormData.ts` 
+     * explaining CalendarDate vs parsedPurchaseDate's Date
+     * also in this hook, `purchaseDate` is used to provide the month and year for getting the overview document to update
+     */
     const [purchaseDate, setPurchaseDate] = useState<CalendarDate | null>(null)
     const [formData, setFormData] = useState<ExpensesFormInputGroupType[]>([])
     const [isSubmittingForm, setIsSubmittingForm] = useState(false)
-    // Reminder: this below may no longer be needed since we now have an error reducer
-    const { setErrors, resetError } = useErrorHandler()
+    // TODO: this below may no longer be needed since we now have an error reducer
+    const { setErrors } = useErrorHandler()
 
     const dispatch = useDispatch()
 
@@ -119,59 +121,48 @@ export const useAddExpenses = ({ creditCardsList }: Props) => {
         }
     }
 
-    const handleExpensesFormSubmit = useCallback(async() => {
-
-        resetError()
-        if (!formData.length || purchaseDate === null || uid === null) {
-            dispatch(setErrorDetails({
-                message: "Cannot process expenses form submission due to missing required information.",
-                code: 400
-            }))
-            dispatch(openErrorModal())
-            return 
-        }
-
-        const isSchemaValidated = validateSchemaDataArray(ExpenseSchema, formData)
-        if (!isSchemaValidated) {
-            dispatch(setErrorDetails({
-                message: "Cannot process expenses form submission due to schema mismatch.",
-                code: 400
-            }))
-            dispatch(openErrorModal())
-            return
-        }
+    const handleExpensesFormSubmit = async() => {
 
         setIsSubmittingForm(true)
-        
-        const { data, success, error, errorCode } = await addExpenses(formData, uid)
+        try {
+            if (!formData.length || purchaseDate === null || uid === null) {
+                throw new Error("Please fill out all required fields.")
+            }
 
-        if (success && data?.data) {
-            const overviewUpdateData = {
-                amount: data.data.amount,
-                transactions: data.data.transactions
-            } as UpdateExpensesOverviewFields
+            validateSchemaArray(ExpenseSchema, formData)
 
-            // gotta know how this will catch errors
-            // also there should be a fallback or error logs in case below function fails for some reason
-            await findAndUpdateExpensesOverview(uid, overviewUpdateData)
+            const expensesTotals: ExpensesMetrics = await addExpensesAPI(uid, formData)
 
-            dispatch(setNotificationMessage("New expenses has been added."))
+            const overview = await getOverviewDocument(uid, purchaseDate.year, purchaseDate.month)
+
+            if (overview !== null) {
+                await updateOverview(uid, overview.id, expensesTotals)
+            } else {
+                const data = {
+                    month: purchaseDate.month,
+                    year: purchaseDate.year,
+                    ...expensesTotals
+                }
+
+                const validatedData: FirestoreOverview = validateSchemaObject(OverviewSchema, data)
+                await createOverview(uid, validatedData)
+            }
+
+            dispatch(setNotificationMessage("New expenses added."))
             dispatch(openNotification())
 
             setFormData([])
             setPurchaseDate(null)
+        } catch (error: any) {
+            dispatch(setErrorDetails({
+                message: error.message || "Something went wrong. Cannot add new expenses.",
+                code: 400
+            }))
+            dispatch(openErrorModal())
+        } finally {
             setIsSubmittingForm(false)
-            return
         }
-
-        dispatch(setErrorDetails({ 
-            message: error || "Unknown error occurred. Unable to add expenses", 
-            code: errorCode || 503 
-        }))
-        dispatch(openErrorModal())
-
-        setIsSubmittingForm(false)
-    }, [setIsSubmittingForm, setFormData, setPurchaseDate, resetError])
+    }
 
     return {
         purchaseDate,

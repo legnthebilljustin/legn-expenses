@@ -6,8 +6,9 @@ import { addCard } from "@/apis/cards"
 import { useDispatch } from "react-redux"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
-import { validateSchemaData } from "@/utils/service"
+import { validateSchemaObject } from "@/utils/service"
 import { CreditCardSchema } from "@/schema"
+import { FirestoreCreditCard } from "@/schema/creditCardSchema"
 
 type ReturnType = {
     formData: CardFormInputType
@@ -46,20 +47,11 @@ export const useAddCards = (): ReturnType => {
 
     const handleAddCardFormSubmit = useCallback(async(userUid: string) => {
         resetError()
-        
-        const isSchemaValidated = validateSchemaData(CreditCardSchema, formData)
-        if (!isSchemaValidated) {
-            dispatch(setErrorDetails({
-                message: "Cannot process new credit card submission due to schema mismatch.",
-                code: 400
-            }))
-            dispatch(openErrorModal())
-            return 
-        }
-
         setIsFormSubmitted(true)
+
         try {
-            await addCard(formData, userUid)
+            const parsedData: FirestoreCreditCard = validateSchemaObject(CreditCardSchema, formData)
+            await addCard(parsedData, userUid)
             dispatch(setNotificationMessage(`New card ${formData.name} has been added.`))
             dispatch(openNotification())
 
@@ -70,9 +62,9 @@ export const useAddCards = (): ReturnType => {
                 dueDaysAfterBilling: 0,
                 color: ""
             })
-        } catch (error) {
+        } catch (error: any) {
             dispatch(setErrorDetails({
-                message: "Cannot add new card at this time.",
+                message: error.message || "Cannot add new card at this time.",
                 code: 500
             }))
             dispatch(openErrorModal())
