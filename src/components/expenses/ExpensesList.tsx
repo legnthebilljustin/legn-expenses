@@ -1,26 +1,29 @@
 import { EditExpensesDetailsType, GroupedExpensesType } from "@/types/expenses"
 import ExpensesTable from "./ExpensesTable"
-import { useDeleteExpense, useFetchExpenses } from "@/hooks"
+import { useDeleteExpense } from "@/hooks"
 import { useDispatch, useSelector } from "react-redux"
 import { Button, Spinner } from "@nextui-org/react"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import EditExpensesForm from "./EditExpensesForm"
 import { useCallback, useEffect, useState } from "react"
 import { CONFIRMATION_TYPES, openConfirmationModal } from "@/state/confirmationSlice"
 import { RootState } from "@/state/store"
+import { ExpensesProvider, useExpenses } from "@/context/ExpensesContext"
 
+const ExpensesList = () => {
+    return (
+        <ExpensesProvider>
+            <ExpensesListChild />
+        </ExpensesProvider>
+    )
+}
 
-export default function ExpensesList() {
+const ExpensesListChild = () => {
     const { actionConfirmed } = useSelector((state: RootState) => state.confirmation)
+    const { groupedExpensesList, 
+        isLoading, isLoadingAdditional, isAllExpensesFetched,
+        loadNextPage
 
-    const {
-        expenses,
-        isLoading,
-        isLoadingAdditional,
-        errors,
-        loadNextPage,
-        isAllExpensesFetched
-    } = useFetchExpenses()
+    } = useExpenses()
     const { isDeleting, deleteExpenseItem } = useDeleteExpense()
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [editExpensesItemData, setEditExpensesItemData] = useState<EditExpensesDetailsType | null>(null)
@@ -49,20 +52,11 @@ export default function ExpensesList() {
         }
     }, [actionConfirmed])
 
-
     if (isLoading) {
         return <Spinner label="Getting your transactions..." color="primary" />
     }
 
-    if (errors) {
-        dispatch(setErrorDetails({
-            message: errors?.message || "Unable to fetch list of expenses.",
-            code: errors.code || 500
-        }))
-        dispatch(openErrorModal())
-    }
-
-    if (!expenses.length) {
+    if (!groupedExpensesList.length) {
         return <div className="text-center mt-8">No expenses found.</div>
     }
 
@@ -73,7 +67,7 @@ export default function ExpensesList() {
     return (
         <>
             <div className="max-w-[800px]">
-                {expenses.map((group: GroupedExpensesType, index: number) => (
+                {groupedExpensesList.map((group: GroupedExpensesType, index: number) => (
                     <div key={index}>
                         <div className="date text-xs font-bold mb-2 mt-4 uppercase text-gray-400">{ group.purchaseDate }</div>
                         <ExpensesTable expenses={group.expenses} 
@@ -93,7 +87,6 @@ export default function ExpensesList() {
                     </Button>
                 </div>
             </div>
-
             { isEditModalOpen && editExpensesItemData && 
                 <EditExpensesForm 
                     isOpen={isEditModalOpen}
@@ -104,3 +97,4 @@ export default function ExpensesList() {
         </>
     )
 }
+export default ExpensesList

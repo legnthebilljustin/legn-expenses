@@ -26,6 +26,10 @@ export default function ExpensesTable({ expenses, onEditExpenseItem, onDeleteIte
                 >{ column.label }</TableColumn>}
         </TableHeader>
         <TableBody>
+            {/* NOTE: Unable to memoize table row component
+                NextUI TableBody only accepts TableRow as child
+                https://stackoverflow.com/questions/79042885/nextui-table-with-custom-component-inside-table-body 
+            */}
             {expenses.map((item: ExpensesItemType) => (
                 <TableRow key={item.id}>
                     <TableCell width="50%">{ item.itemName }</TableCell>
