@@ -1,11 +1,11 @@
-import { CardsWithStatementType } from "@/types/cards"
+import { CardWithStatementType } from "@/types/cards"
 import { Button, Card, CardBody, Tooltip } from "@nextui-org/react"
 import PaymentStatus from "./PaymentStatus"
 import { CARD_STATEMENT_PAYMENT_STATUS } from "@/constants/others"
 import { PayStatementProps } from "@/hooks/cards/usePayStatement"
 
 type Props = {
-    card: CardsWithStatementType
+    card: CardWithStatementType
     onPayCardStatement: Function
 }
 
