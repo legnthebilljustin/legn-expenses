@@ -16,6 +16,11 @@ export default function EditExpensesForm({ expensesItem, isOpen, onModalClose }:
         formData
     } = useEditExpenses(expensesItem)
 
+    const onFormSubmit = async() => {
+        await handleFormSubmit()
+        onModalClose()
+    }
+
     return (
         <Modal hideCloseButton size="xs" isOpen={isOpen}>
             <ModalContent>
@@ -53,7 +58,7 @@ export default function EditExpensesForm({ expensesItem, isOpen, onModalClose }:
                     </Button>
                     <Button color="primary" size="sm"
                         isDisabled={isEditSubmitted}
-                        onClick={handleFormSubmit}
+                        onClick={() => onFormSubmit()}
                     >
                         { isEditSubmitted ? "Loading..." : "Update" }
                     </Button>

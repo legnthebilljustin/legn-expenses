@@ -1,13 +1,15 @@
 import { editExpensesItem } from "@/apis/expenses"
+import { useExpenses } from "@/context/ExpensesContext"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { RootState } from "@/state/store"
-import { EditExpensesDetailsType } from "@/types/expenses"
+import { EditExpensesDetailsType, ExpensesItemType } from "@/types/expenses"
 import { ChangeEvent, useCallback, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 export const useEditExpenses = (expensesItem: EditExpensesDetailsType) => {
     const { uid } = useSelector((state: RootState) => state.auth)
+    const { updateExpensesItem } = useExpenses()
     const [isEditSubmitted, setIsEditSubmitted] = useState(false)
     const [formData, setFormData] = useState<EditExpensesDetailsType>(expensesItem)
 
@@ -26,22 +28,25 @@ export const useEditExpenses = (expensesItem: EditExpensesDetailsType) => {
     const handleFormSubmit = async() => {
         setIsEditSubmitted(true)
 
-        const { success, error, errorCode } = await editExpensesItem(uid || "", formData)
-
-        if (success) {
+        try {
+            const doc = await editExpensesItem(uid || "", formData)
+            
+            if (doc.exists()) {
+                const updatedData = { id: doc.id, ...doc.data() }
+                updateExpensesItem(updatedData as ExpensesItemType)
+            }
             dispatch(setNotificationMessage("Expenses item has been updated."))
             dispatch(openNotification())
-
-            setTimeout(() => window.location.reload(), 2000)
-        } else {
+            
+        } catch (error: any) {
             dispatch(setErrorDetails({
-                message: error || "Unable to update item. Something went wrong.",
-                code: errorCode || 400
+                message: error?.message || "Unable to update item. Something went wrong.",
+                code: error?.code || 400
             }))
             dispatch(openErrorModal())
+        } finally {
+            setIsEditSubmitted(false)
         }
-
-        setIsEditSubmitted(false)
     }
 
     return {

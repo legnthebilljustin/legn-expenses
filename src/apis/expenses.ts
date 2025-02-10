@@ -125,38 +125,38 @@ export const editExpensesItem = async(userUid: string, formData: EditExpensesDet
     const expensesPath = `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`
     const overviewPath = `${BASE_PATH_2 + userUid}/${COLLECTIONS.OVERVIEW}`
 
-    return firestoreHandler(async() => {
-        try {
-            const expensesSnapshot = await getExpensesItem(expensesPath, formData.id)
-            const parsedExpensesData: FirestoreExpense = validateSchemaObject(ExpenseSchema, expensesSnapshot)
+    try {
+        const expensesSnapshot = await getExpensesItem(expensesPath, formData.id)
+        const parsedExpensesData: FirestoreExpense = validateSchemaObject(ExpenseSchema, expensesSnapshot)
 
-            const { price, purchaseDate } = parsedExpensesData
-            const { month, year } = getPurchaseDateMonthAndYear(purchaseDate as Timestamp)
-            const diff = formData.price - price
+        const { price, purchaseDate } = parsedExpensesData
+        const { month, year } = getPurchaseDateMonthAndYear(purchaseDate as Timestamp)
+        const diff = formData.price - price
 
-            const overview = await getOverviewDocument(userUid, year, month)
+        const overview = await getOverviewDocument(userUid, year, month)
 
-            if (overview === null) {
-                throw new Error("Overview document not found.")
-            }
-
-            const expensesDocRef = doc(db, expensesPath, formData.id)
-            const overviewDocRef = doc(db, overviewPath, overview.id)
-
-            await runTransaction(db, async (transaction) => {
-                transaction.update(expensesDocRef, {
-                  price: formData.price,
-                  itemName: formData.itemName,
-                });
-
-                transaction.update(overviewDocRef, {
-                  amount: overview.amount + diff,
-                });
-            });
-        } catch (error: any) {
-            throw new Error(error.message || "Something went wrong. Cannot update expense.")
+        if (overview === null) {
+            throw new Error("Overview document not found.")
         }
-    })
+
+        const expensesDocRef = doc(db, expensesPath, formData.id)
+        const overviewDocRef = doc(db, overviewPath, overview.id)
+
+        await runTransaction(db, async (transaction) => {
+            transaction.update(expensesDocRef, {
+              price: formData.price,
+              itemName: formData.itemName,
+            });
+
+            transaction.update(overviewDocRef, {
+              amount: overview.amount + diff,
+            });
+        });
+
+        return await getDoc(expensesDocRef)
+    } catch (error: any) {
+        throw new Error(error.message || "Something went wrong. Cannot update expense.")
+    }
 }
 
 export const deleteExpensesItem = async(userUid: string, expensesItemUid: string) => {
