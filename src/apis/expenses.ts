@@ -41,9 +41,8 @@ export const addExpensesAPI = async(
     }
 }
 
-export const getExpenses = async(userUid: string) => {
-    
-    return firestoreHandler(async() => {
+export const getExpenses = async(userUid: string): Promise<QueryDocumentSnapshot[]> => {
+    try {
         const querySnapshot = await getDocs(
             query(
                 collection(db, `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`),
@@ -52,14 +51,17 @@ export const getExpenses = async(userUid: string) => {
             )
         )
         return querySnapshot.docs
-    })
+    } catch (error) {
+        throw new Error('Unable to get expenses.')
+    }
 }
 
 export const getAdditionalExpenses = async(
     snapshot: QueryDocumentSnapshot,
     userUid: string
-) => {
-    return firestoreHandler(async() => {
+): Promise<QueryDocumentSnapshot[]> => {
+
+    try {
         const querySnapshot = await getDocs(
             query(
                 collection(db, `${BASE_PATH_2 + userUid}/${COLLECTIONS.EXPENSES}`),
@@ -68,9 +70,10 @@ export const getAdditionalExpenses = async(
                 limit(EXPENSES_LIMIT)
             )
         )
-
         return querySnapshot.docs
-    })
+    } catch (error) {
+        throw new Error('Unable to get additional expenses.')
+    }
 }
 
 export const getExpensesByDateRange = async(userUid: string, startDate: any, endDate: any) => {
