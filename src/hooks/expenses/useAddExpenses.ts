@@ -10,13 +10,13 @@ import { ExpensesFormInputGroupType, ExpensesMetrics } from "@/types/expenses"
 import { useErrorHandler } from "../useErrorHandler"
 import { isACalendarDate } from "@/utils/dates"
 import { RootState } from "@/state/store"
-import { CardsForDropdownType } from "@/types/cards"
+import { CardForDropdownType } from "@/types/cards"
 import { validateSchemaArray, validateSchemaObject } from "@/utils/service"
 import { ExpenseSchema, OverviewSchema } from "@/schema"
 import { FirestoreOverview } from "@/schema/overviewSchema"
 
 type Props = {
-    creditCardsList: CardsForDropdownType[]
+    creditCardsList: CardForDropdownType[]
 }
 
 export const useAddExpenses = ({ creditCardsList }: Props) => {
@@ -107,7 +107,7 @@ export const useAddExpenses = ({ creditCardsList }: Props) => {
         setFormData(updatedFormData)
     }, [formData, setFormData])
 
-    const searchCardById = (value: string): CardsForDropdownType | undefined => {
+    const searchCardById = (value: string): CardForDropdownType | undefined => {
         return creditCardsList.find(card => card.id === value)
     }   
 

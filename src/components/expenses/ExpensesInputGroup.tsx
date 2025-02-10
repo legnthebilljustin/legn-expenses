@@ -1,7 +1,7 @@
 import { Input, Select, SelectItem } from "@nextui-org/react";
 import { ExpensesFormInputGroupType } from "@/types/expenses";
 import { PAYMENT_METHODS_ENUMS } from "@/constants/others";
-import { CardsForDropdownType } from "@/types/cards";
+import { CardForDropdownType } from "@/types/cards";
 import { ChangeEvent, useState } from "react";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
     item: ExpensesFormInputGroupType
     onChange: Function
     onCardSelectChange: Function
-    creditCardsList: CardsForDropdownType[]
+    creditCardsList: CardForDropdownType[]
     removeFormDataItem: Function
 }
 
@@ -63,7 +63,7 @@ export default function ExpensesInputGroup({ index, item, onChange, creditCardsL
                 isDisabled={!enableCardSelection}
             >
                 { (!creditCardsList.length) ? <SelectItem key={0} value="">No added cards yet.</SelectItem> :
-                    creditCardsList.map((card: CardsForDropdownType) => (
+                    creditCardsList.map((card: CardForDropdownType) => (
                         <SelectItem key={card.id as string} className="truncate">{ card.name }</SelectItem>
                     ))
                 }

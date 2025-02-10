@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
-import { CardPaymentStatus, FirestoreCardStatement, CardsWithStatementType, CardsFetchType, CardsForDropdownType } from "@/types/cards"
+import { CardPaymentStatus, FirestoreCardStatement, CardWithStatementType, CardsFetchType, CardForDropdownType } from "@/types/cards"
 import { RootState } from "@/state/store"
 import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore/lite"
 import { getCardLatestStatement, getCards } from "@/apis/cards"
@@ -14,8 +14,8 @@ type StatementDetailsProcessedType = {
 
 export const useFetchCards = (cardFetchType: CardsFetchType) => {
     const { uid } = useSelector((state: RootState) => state.auth)
-    const [cardsForDropdown, setCardsForDropdown] = useState<CardsForDropdownType[]>([])
-    const [cardsForList, setCardsForList] = useState<CardsWithStatementType[]>([])
+    const [cardsForDropdown, setCardsForDropdown] = useState<CardForDropdownType[]>([])
+    const [cardsForList, setCardsForList] = useState<CardWithStatementType[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     const dispatch = useDispatch()
@@ -52,7 +52,7 @@ export const useFetchCards = (cardFetchType: CardsFetchType) => {
 
         if (docs !== undefined) {
             
-            const cardsList: CardsForDropdownType[] = docs?.docs.map((doc: QueryDocumentSnapshot) => ({ 
+            const cardsList: CardForDropdownType[] = docs?.docs.map((doc: QueryDocumentSnapshot) => ({ 
                 id: doc.id, 
                 name: doc.data().name,
                 color: doc.data().color
@@ -67,7 +67,7 @@ export const useFetchCards = (cardFetchType: CardsFetchType) => {
         const docs = await fetchNew(userUid)
 
         if (docs !== undefined) {
-            const cardsList: CardsWithStatementType[] = await Promise.all(
+            const cardsList: CardWithStatementType[] = await Promise.all(
                 docs.docs.map(async(doc: QueryDocumentSnapshot) => {
                     const { name, billingDay, color } = doc.data()
 
