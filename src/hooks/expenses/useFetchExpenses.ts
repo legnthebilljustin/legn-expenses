@@ -1,101 +1,117 @@
 import { useCallback, useEffect, useState } from "react"
 import { GroupedExpensesType } from "@/types/expenses"
-import { useErrorHandler } from "@/hooks/useErrorHandler"
 import { EXPENSES_LIMIT, getAdditionalExpenses, getExpenses } from "@/apis/expenses"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/state/store"
-import { FirestoreResponse } from "@/firebase/firestoreService"
 import { QueryDocumentSnapshot } from "firebase/firestore/lite"
+import { ExpenseSchema } from "@/schema"
+import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 
-type ReturnType = {
-    expenses: GroupedExpensesType[]
-    isLoading: boolean
-    isLoadingAdditional: boolean
-    errors: any
-    isAllExpensesFetched: boolean
-    loadNextPage: () => void
-}
-
-export const useFetchExpenses = (): ReturnType => {
+export const useFetchExpenses = () => {
     const { uid } = useSelector((state: RootState) => state.auth)
     const [expensesList, setExpensesList] = useState<GroupedExpensesType[]>([])
     const [isInitialLoading, setIsInitialLoading] = useState(true)
     const [iseFetchingAdditional, setIsFetchingAdditional] = useState(false)
     const [isAllExpensesFetched, setIsAllExpensesFetched] = useState(false)
     const [lastSnapshot, setLastSnapshot] = useState<QueryDocumentSnapshot | undefined>(undefined)
-    
-    const { errors, setErrors, resetError } = useErrorHandler()
+    const dispatch = useDispatch()
 
     useEffect(() => {
-        const query = async() => {
-            if (uid) {
-                const firestoreResponse = await getExpenses(uid)
-                return processExpensesSnapshots(firestoreResponse)
+        if (uid) {
+            const query = async() => {
+                try {
+                    const response = await getExpenses(uid)
+                    
+                    if (!response.length) {
+                        return
+                    }
+                    // if one or more item is a schema mismatch,
+                    // we still want to show the expenses but we should inform that a data is incorrect
+                    const validation = validateDocumentSnapshot(response)
+                    if (!validation) {
+                        dispatch(setErrorDetails({
+                            message: "Some of your transactions have the incorrect format and are hidden from the list.",
+                            code: 400
+                        }))
+                        dispatch(openErrorModal())
+                    }
+
+                    processExpensesSnapshots(response)
+                } catch (error) {
+                    dispatch(setErrorDetails({
+                        message: "Unable to fetch expenses.",
+                        code: 400
+                    }))
+                    dispatch(openErrorModal())
+                } finally {
+                    setIsInitialLoading(false)
+                }
             }
+
+            query()
         }
-        query()
+
     }, [uid])
 
-    const processExpensesSnapshots = (firestoreData: FirestoreResponse) => {
-        const { data, success, error, errorCode } = firestoreData
+    const validateDocumentSnapshot = (data: QueryDocumentSnapshot[]): boolean => {
+        const isValidated = data.every((doc) => {
+            const expenseData = { ...doc.data() }
+            const result = ExpenseSchema.safeParse(expenseData)
 
-        if (!data || !success) {
-            setErrors({
-                message: error || "An unknown error occured.",
-                code: errorCode || 400
-            })
+            if (!result.success) {
+                return false
+            }
 
-            return false
-        }
+            return true
+        })
 
+        return isValidated
+    }
+
+    const processExpensesSnapshots = (data: QueryDocumentSnapshot[]) => {
         const groupedExpenses = groupExpensesByPurchaseDate(data)
         setExpensesList(groupedExpenses)
         setLastSnapshot(data[data.length - 1])
-
-        setIsInitialLoading(false)
     }
 
     const loadNextPage = useCallback(async() => {
-        if (!uid || lastSnapshot === undefined) {
-            return setErrors({
+        if (!uid || lastSnapshot == undefined) {
+            dispatch(setErrorDetails({
                 message: "Missing required information. Cannot fetch additional expenses.",
                 code: 400
-            })
+            }))
+            return dispatch(openErrorModal())
         }
 
-        resetError()
         setIsAllExpensesFetched(false)
         setIsFetchingAdditional(true)
 
         try {
-            const { data, success, error, errorCode } = await getAdditionalExpenses(lastSnapshot, uid)
-            
-            if (!data || !success) {
-                throw { message: error, code: errorCode }
-            }
+            const response = await getAdditionalExpenses(lastSnapshot, uid)
 
-            if (data.length === 0) {
+            if (response.length === 0) {
                 setExpensesList([])
                 setLastSnapshot(undefined)
                 setIsAllExpensesFetched(true)
             } else {
-                const grouped = groupExpensesByPurchaseDate(data)
+                const grouped = groupExpensesByPurchaseDate(response)
                 setExpensesList(grouped)
-                setLastSnapshot(data[data.length - 1])
-                setIsAllExpensesFetched(data.length < EXPENSES_LIMIT)
+                setLastSnapshot(response[response.length - 1])
+                setIsAllExpensesFetched(response.length < EXPENSES_LIMIT)
             }
 
         } catch (err: any) {
-            setErrors({
+            dispatch(setErrorDetails({
                 message: err?.message || "An unknown error occured.",
                 code: err?.code || 400
-            })
+            }))
+            dispatch(openErrorModal())
         } finally {
             setIsFetchingAdditional(false)
         }
     }, [lastSnapshot, uid])
 
-    const groupExpensesByPurchaseDate = (docs: any): GroupedExpensesType[] => {
+    const groupExpensesByPurchaseDate = (docs: QueryDocumentSnapshot[]): GroupedExpensesType[] => {
         const grouped = docs.reduce((grouped: any, doc: any) => {
             const purchaseDate = doc.data().purchaseDate.toDate();
             const dateKey = purchaseDate.toDateString();
@@ -120,7 +136,6 @@ export const useFetchExpenses = (): ReturnType => {
         expenses: expensesList,
         isLoading: isInitialLoading,
         isLoadingAdditional: iseFetchingAdditional,
-        errors,
         isAllExpensesFetched,
         loadNextPage
     }
