@@ -7,16 +7,7 @@ import { RootState } from "@/state/store"
 import { FirestoreResponse } from "@/firebase/firestoreService"
 import { QueryDocumentSnapshot } from "firebase/firestore/lite"
 
-type ReturnType = {
-    expenses: GroupedExpensesType[]
-    isLoading: boolean
-    isLoadingAdditional: boolean
-    errors: any
-    isAllExpensesFetched: boolean
-    loadNextPage: () => void
-}
-
-export const useFetchExpenses = (): ReturnType => {
+export const useFetchExpenses = () => {
     const { uid } = useSelector((state: RootState) => state.auth)
     const [expensesList, setExpensesList] = useState<GroupedExpensesType[]>([])
     const [isInitialLoading, setIsInitialLoading] = useState(true)
