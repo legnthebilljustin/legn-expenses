@@ -1,13 +1,13 @@
 import { CARD_STATEMENT_PAYMENT_STATUS, CARDS_FETCH_TYPE } from "@/constants/others"
 import { Timestamp } from "firebase/firestore/lite"
 
-export type CardsForDropdownType = {
+export type CardForDropdownType = {
     id: string
     name: string
     color: string
 }
 
-export type CardsWithStatementType = {
+export type CardWithStatementType = {
     id: string
     name: string
     color: string

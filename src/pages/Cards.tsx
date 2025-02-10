@@ -1,5 +1,5 @@
 import { Spinner } from "@nextui-org/react"
-import { CardsWithStatementType } from "@/types/cards"
+import { CardWithStatementType } from "@/types/cards"
 import { useFetchCards } from "@/hooks/cards/useFetchCards"
 import { AddCardForm, CardItem, PageHeading } from "@/components"
 import { useSelector } from "react-redux"
@@ -47,7 +47,7 @@ export default function Cards() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 p-4">
-            {cardsForList.map((card: CardsWithStatementType) => (
+            {cardsForList.map((card: CardWithStatementType) => (
                 <CardItem key={card.id} card={card} onPayCardStatement={handleOnPayCardStatement} />
             ))}
             </div>
