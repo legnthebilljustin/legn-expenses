@@ -37,28 +37,26 @@ export const useFetchCryptoList = () => {
     }, [])
 
     const fetchCryptoList = async(): Promise<CryptoListType[] | undefined> => {
-        const { success, data, error, errorCode } = await getAllCrypto()
+        try {
+            const crypto = await getAllCrypto()
+            const cryptoList: CryptoListType[] = crypto.map((doc: QueryDocumentSnapshot) => {
+                // not using service/validateSchemaObject here because we do not want to throw an error if one fails
+                const parsedResult = CryptoSchema.safeParse(doc.data())
+                if (!parsedResult.success) {
+                    return null
+                }
 
-        if (!success) {
+                return { id: doc.id, ...parsedResult.data }
+            }).filter((item: CryptoListType | null) => item !== null)
+
+            return cryptoList
+        } catch (error: any) {
             dispatch(setErrorDetails({
-                message: error || "Unknown error occured. Cannot get list.", 
-                code: errorCode || 500
+                message: error?.message || "Unknown error occured. Cannot get list.", 
+                code: error?.code || 500
             }))
             dispatch(openErrorModal())
-            return
         }
-
-        const cryptoList: CryptoListType[] = data
-            .map((doc: QueryDocumentSnapshot<CryptoListType>) => {
-                const parseResult = CryptoSchema.safeParse(doc.data())
-                if (parseResult.success) {
-                    return { id: doc.id, ...parseResult.data }
-                }
-                return null
-            })
-            .filter((item: CryptoListType | null) => item !== null)
-
-        return cryptoList
     }
 
     const getCryptoPricesAndAttach = async(cryptoList: CryptoListType[]): Promise<CryptoWithPriceType[] | undefined> => {

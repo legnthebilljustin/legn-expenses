@@ -3,7 +3,8 @@ import { closeConfirmationModal, CONFIRMATION_TYPES, openConfirmationModal } fro
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { RootState } from "@/state/store"
-import { useState } from "react"
+import { CustomError } from "@/utils/customError"
+import { useCallback, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 export type PayStatementProps = {
@@ -18,37 +19,37 @@ export const usePayStatement = () => {
     const [isDoingPayment, setIsDoingPayment] = useState(false)
     const [detailsForPayment, setDetailsForPayment] = useState<PayStatementProps | undefined>(undefined)
 
-    const handleOnPayCardStatement = ({ statementUid, cardName, cardUid }: PayStatementProps) => {
+    const handleOnPayCardStatement = useCallback(({ statementUid, cardName, cardUid }: PayStatementProps) => {
         setDetailsForPayment({ statementUid, cardName, cardUid })
         const message = `Mark latest statement for ${cardName} as paid? This action cannot be reversed.`
 
         dispatch(openConfirmationModal({ message, type: CONFIRMATION_TYPES.ACTION }))
-    }
+    }, [dispatch])
 
     const payCardStatement = async() => {
         dispatch(closeConfirmationModal())
-        if (!detailsForPayment?.cardUid || !detailsForPayment?.statementUid || !uid) {
-            return false
-        }
+        try {
+            if (!detailsForPayment?.cardUid || !detailsForPayment?.statementUid || !uid) {
+                throw new CustomError("Card ID or Statement ID is missing. Cannot process request.", 400)
+            }
 
-        setIsDoingPayment(true)
-        const { success, error, errorCode } = await markCardStatementAsPaidApi(uid, detailsForPayment.cardUid, detailsForPayment.statementUid)
+            await markCardStatementAsPaidApi(uid, detailsForPayment.cardUid, detailsForPayment.statementUid)
 
-        if (success) {
             dispatch(setNotificationMessage(`${detailsForPayment.cardName} successfully marked as paid.`))
             dispatch(openNotification())
             setDetailsForPayment(undefined)
 
+            // TODO: make this DOM replace instead of page refresh
             setTimeout(() => location.reload(), 2000)
-        } else {
+        } catch (error: any) {
             dispatch(setErrorDetails({
-                message: error || "Unknown error occured.",
-                code: errorCode || 500
+                message: error?.message || "Unknown error occured. Unable to mark statement as paid",
+                code: error?.code || 500
             }))
             dispatch(openErrorModal())
+        } finally {
+            setIsDoingPayment(false)
         }
-
-        setIsDoingPayment(false)
     }
 
     return {

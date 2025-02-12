@@ -89,8 +89,8 @@ export const useCryptoAssetFormData = (cryptoList: CryptoWithPriceType[]) => {
             
         } catch(error: any) {
             dispatch(setErrorDetails({
-                message: error.message || "Unable to add new asset.",
-                code: 400
+                message: error?.message || "Unable to add new asset.",
+                code: error?.code || 400
             }))
             dispatch(openErrorModal())
         } finally {

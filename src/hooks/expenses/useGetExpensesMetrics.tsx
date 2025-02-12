@@ -46,19 +46,19 @@ export const useGetExpensesMetrics = (): ReturnType => {
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
         const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 
-        const { data } = await getExpensesByDateRange(userUid, startOfMonth, endOfMonth)
+        const expenses = await getExpensesByDateRange(userUid, startOfMonth, endOfMonth)
 
         let totalAmount = 0
         let totalTransactions = 0
 
-        data?.map((doc) => {
+        expenses?.map((doc) => {
             const { price } = doc.data()
 
             if (isANumber(price)) {
                 totalAmount += price
                 totalTransactions += 1
             } else {
-                // logger here for invalid data
+                // TODO: logger here for invalid data
             }
         })
 
@@ -69,15 +69,15 @@ export const useGetExpensesMetrics = (): ReturnType => {
     }
     
     const getMonthlyRecord = async(userUid: string) => {
-        const { data } = await getAllExpensesOverviewApi(userUid)
-
         let totalAmount = 0
         let totalTransactions = 0
         const list: MonthlyExpensesListType[] = []
 
-        if (data) {
+        const overview = await getAllExpensesOverviewApi(userUid)
 
-            data?.map((doc) => {
+        if (overview && overview.length > 0) {
+
+            overview?.map((doc) => {
                 const { amount, transactions, year, month } = doc.data()
 
                 if (isANumber(amount) && isANumber(transactions) && isANumber(year) && isANumber(month)) {
@@ -91,7 +91,7 @@ export const useGetExpensesMetrics = (): ReturnType => {
                     })
                 }
 
-                // else here for invalid overview data logger
+                // TODO: else here for invalid overview data logger
             })
         }
 
