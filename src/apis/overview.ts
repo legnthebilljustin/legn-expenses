@@ -1,17 +1,17 @@
-import { addDoc, collection, doc, getDocs, increment, limit, orderBy, query, updateDoc, where } from "firebase/firestore/lite"
-import { firestoreHandler } from "../firebase/firestoreService"
+import { addDoc, collection, doc, getDocs, increment, limit, orderBy, query, QueryDocumentSnapshot, updateDoc, where } from "firebase/firestore/lite"
 import db from "../firebase/config"
 import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
 import { FirestoreOverview, OverviewSchema } from "@/schema/overviewSchema"
 import { validateSchemaObject } from "@/utils/service"
 import { ExpensesMetrics } from "@/types/expenses"
+import CustomError from "@/utils/customError"
 
-export const getAllExpensesOverviewApi = async(userUid: string) => {
+export const getAllExpensesOverviewApi = async(userUid: string): Promise<QueryDocumentSnapshot[] | null> => {
     if (typeof userUid !== "string") {
         throw "Invalid parameter provided."
     }
 
-    return firestoreHandler(async() => {
+    try {
         const path = `${BASE_PATH + userUid}/${COLLECTIONS.OVERVIEW}`
         const overviewCollection = collection(db, path)
 
@@ -24,8 +24,14 @@ export const getAllExpensesOverviewApi = async(userUid: string) => {
 
         const querySnapshot = await getDocs(overviewQuery)
         const result = querySnapshot.docs.length ? querySnapshot.docs : null
+
         return result
-    })
+    } catch (error: any) {
+        throw new CustomError(
+            error?.message || "Unable to get expenses overview.",
+            error?.code
+        )
+    }
 }
 
 export const getOverviewDocument = async(
