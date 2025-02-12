@@ -1,6 +1,6 @@
 import { postCryptoAsset } from "@/apis/crypto"
 import { CryptoAssetFormData, CryptoHoldingSchema, FirestoreCryptoHoldingSchema } from "@/schema/cryptoHoldingSchema"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { CryptoWithPriceType } from "@/types/crypto"
 import { isACalendarDate } from "@/utils/dates"
@@ -88,11 +88,11 @@ export const useCryptoAssetFormData = (cryptoList: CryptoWithPriceType[]) => {
             setFormData(initialState)
             
         } catch(error: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error.message || "Unable to add new asset.",
                 code: 400
             }))
-            dispatch(openErrorModal())
+            
         } finally {
             setIsSubmittingForm(false)
         }

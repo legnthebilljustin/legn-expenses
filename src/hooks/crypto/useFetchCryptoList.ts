@@ -2,7 +2,7 @@ import { fetchCryptoPricesAPI } from "@/apis/proxy"
 import { getAllCrypto } from "@/apis/crypto"
 import { CryptoSchema } from "@/schema/cryptoSchema"
 import { setCryptoList } from "@/state/cryptoSlice"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { CryptoListType, CryptoWithPriceType } from "@/types/crypto"
 import { QueryDocumentSnapshot } from "firebase/firestore/lite"
 import { useEffect, useState } from "react"
@@ -40,11 +40,11 @@ export const useFetchCryptoList = () => {
         const { success, data, error, errorCode } = await getAllCrypto()
 
         if (!success) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error || "Unknown error occured. Cannot get list.", 
                 code: errorCode || 500
             }))
-            dispatch(openErrorModal())
+            
             return
         }
 
@@ -93,11 +93,11 @@ export const useFetchCryptoList = () => {
         } catch (err: any) {
             const error = JSON.parse(err.message)
 
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error?.message || "Unknown error occured. Cannot get list.", 
                 code: error?.code || 500
             }))
-            dispatch(openErrorModal())
+            
         }
     }
 

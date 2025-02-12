@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { CardPaymentStatus, FirestoreCardStatement, CardWithStatementType, CardsFetchType, CardForDropdownType } from "@/types/cards"
 import { RootState } from "@/state/store"
 import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore/lite"
@@ -38,11 +38,11 @@ export const useFetchCards = (cardFetchType: CardsFetchType) => {
         }
 
 
-        dispatch(setErrorDetails({
+        dispatch(openErrorModal({
             message: error || "Unable to fetch your cards. Unknown error occured.",
             code: errorCode || 503
         }))
-        dispatch(openErrorModal())
+        
 
         return undefined
     }

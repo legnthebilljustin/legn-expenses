@@ -1,6 +1,6 @@
 import { markCardStatementAsPaidApi } from "@/apis/cards"
 import { closeConfirmationModal, CONFIRMATION_TYPES, openConfirmationModal } from "@/state/confirmationSlice"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { RootState } from "@/state/store"
 import { useState } from "react"
@@ -41,11 +41,11 @@ export const usePayStatement = () => {
 
             setTimeout(() => location.reload(), 2000)
         } else {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error || "Unknown error occured.",
                 code: errorCode || 500
             }))
-            dispatch(openErrorModal())
+            
         }
 
         setIsDoingPayment(false)

@@ -1,7 +1,7 @@
 
 import { getHoldings } from "@/apis/crypto"
 import { CryptoHoldingSchema } from "@/schema/cryptoHoldingSchema"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { RootState } from "@/state/store"
 import { AssetTableItemType, CryptoWithPriceType, UnrealizedPNLType } from "@/types/crypto"
 import { QueryDocumentSnapshot } from "firebase/firestore/lite"
@@ -70,12 +70,12 @@ export const useFetchHoldings = () => {
             } catch (err: any) {
                 const { error, errorCode } = JSON.parse(err.message);
                 dispatch(
-                    setErrorDetails({
+                    openErrorModal({
                         message: error || "An unexpected error occurred.",
                         code: errorCode || 500,
                     })
                 );
-                dispatch(openErrorModal());
+                ;
             } finally {
                 setIsFetching(false);
             }
