@@ -1,7 +1,7 @@
 import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
 import db from "@/firebase/config"
 import { CryptoAssetFormData } from "@/schema/cryptoHoldingSchema"
-import { CustomError } from "@/utils/customError"
+import CustomError from "@/utils/customError"
 import { addDoc, collection, getDocs, limit, orderBy, query, QueryDocumentSnapshot } from "firebase/firestore/lite"
 
 export const getAllCrypto = async(): Promise<QueryDocumentSnapshot[]> => {

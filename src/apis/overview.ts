@@ -4,7 +4,7 @@ import { BASE_PATH, COLLECTIONS } from "@/firebase/collections"
 import { FirestoreOverview, OverviewSchema } from "@/schema/overviewSchema"
 import { validateSchemaObject } from "@/utils/service"
 import { ExpensesMetrics } from "@/types/expenses"
-import { CustomError } from "@/utils/customError"
+import CustomError from "@/utils/customError"
 
 export const getAllExpensesOverviewApi = async(userUid: string): Promise<QueryDocumentSnapshot[] | null> => {
     if (typeof userUid !== "string") {

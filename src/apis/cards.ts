@@ -4,7 +4,7 @@ import { BASE_PATH, COLLECTIONS } from "../firebase/collections"
 import { CardFormInputType } from "@/types/cards"
 import { isAValidString } from "@/utils/misc"
 import { CARD_STATEMENT_PAYMENT_STATUS } from "@/constants/others"
-import { CustomError } from "@/utils/customError"
+import CustomError from "@/utils/customError"
 
 export const getCards = async(userUid: string): Promise<QuerySnapshot> => {
     try {

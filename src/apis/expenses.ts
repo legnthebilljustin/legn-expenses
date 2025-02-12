@@ -7,7 +7,7 @@ import { COLLECTION_KEYS } from "@/constants/keys"
 import { ExpenseSchema } from "@/schema"
 import { FirestoreExpense } from "@/schema/expenseSchema"
 import { getOverviewDocument } from "./overview"
-import { CustomError } from "@/utils/customError"
+import CustomError from "@/utils/customError"
 
 export const EXPENSES_LIMIT = 50
 const BASE_PATH_2 = `${COLLECTIONS.USERS}/`

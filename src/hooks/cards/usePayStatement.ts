@@ -3,7 +3,7 @@ import { closeConfirmationModal, CONFIRMATION_TYPES, openConfirmationModal } fro
 import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { RootState } from "@/state/store"
-import { CustomError } from "@/utils/customError"
+import CustomError from "@/utils/customError"
 import { useCallback, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
