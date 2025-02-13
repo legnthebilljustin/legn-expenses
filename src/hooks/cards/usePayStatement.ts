@@ -1,6 +1,6 @@
 import { markCardStatementAsPaidApi } from "@/apis/cards"
 import { closeConfirmationModal, CONFIRMATION_TYPES, openConfirmationModal } from "@/state/confirmationSlice"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { RootState } from "@/state/store"
 import CustomError from "@/utils/customError"
@@ -42,11 +42,11 @@ export const usePayStatement = () => {
             // TODO: make this DOM replace instead of page refresh
             setTimeout(() => location.reload(), 2000)
         } catch (error: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error?.message || "Unknown error occured. Unable to mark statement as paid",
                 code: error?.code || 500
             }))
-            dispatch(openErrorModal())
+            
         } finally {
             setIsDoingPayment(false)
         }

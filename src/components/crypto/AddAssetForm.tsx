@@ -1,6 +1,6 @@
 import { CRYPTO_ASSET_KEYS } from "@/constants/keys";
 import { useCryptoAssetFormData } from "@/hooks";
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice";
+import { openErrorModal } from "@/state/errorSlice";
 import { RootState } from "@/state/store";
 import { Button, DatePicker, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,11 +28,11 @@ export default function AddAssetForm() {
             handleFormSubmit(uid)
             
         } else {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: "Cannot process asset submission due to invalid user id.",
                 code: 400
             }))
-            dispatch(openErrorModal())
+            
         }
     }
 

@@ -5,7 +5,7 @@ import { useErrorHandler } from "../useErrorHandler"
 import { addCard } from "@/apis/cards"
 import { useDispatch } from "react-redux"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { validateSchemaObject } from "@/utils/service"
 import { CreditCardSchema } from "@/schema"
 import { FirestoreCreditCard } from "@/schema/creditCardSchema"
@@ -63,11 +63,11 @@ export const useAddCards = (): ReturnType => {
                 color: ""
             })
         } catch (error: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error.message || "Cannot add new card at this time.",
                 code: 500
             }))
-            dispatch(openErrorModal())
+            
         } finally {
             setIsFormSubmitted(false)
         }

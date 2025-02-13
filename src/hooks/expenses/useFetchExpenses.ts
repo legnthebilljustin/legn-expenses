@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/state/store"
 import { QueryDocumentSnapshot } from "firebase/firestore/lite"
 import { ExpenseSchema } from "@/schema"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 
 export const useFetchExpenses = () => {
     const { uid } = useSelector((state: RootState) => state.auth)
@@ -29,20 +29,20 @@ export const useFetchExpenses = () => {
                     // we still want to show the expenses but we should inform that a data is incorrect
                     const validation = validateDocumentSnapshot(response)
                     if (!validation) {
-                        dispatch(setErrorDetails({
+                        dispatch(openErrorModal({
                             message: "Some of your transactions have the incorrect format and are hidden from the list.",
                             code: 400
                         }))
-                        dispatch(openErrorModal())
+                        
                     }
 
                     processExpensesSnapshots(response)
                 } catch (error) {
-                    dispatch(setErrorDetails({
+                    dispatch(openErrorModal({
                         message: "Unable to fetch expenses.",
                         code: 400
                     }))
-                    dispatch(openErrorModal())
+                    
                 } finally {
                     setIsInitialLoading(false)
                 }
@@ -76,11 +76,11 @@ export const useFetchExpenses = () => {
 
     const loadNextPage = useCallback(async() => {
         if (!uid || lastSnapshot == undefined) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: "Missing required information. Cannot fetch additional expenses.",
                 code: 400
             }))
-            return dispatch(openErrorModal())
+            return 
         }
 
         setIsAllExpensesFetched(false)
@@ -101,11 +101,11 @@ export const useFetchExpenses = () => {
             }
 
         } catch (err: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: err?.message || "An unknown error occured.",
                 code: err?.code || 400
             }))
-            dispatch(openErrorModal())
+            
         } finally {
             setIsFetchingAdditional(false)
         }
