@@ -13,7 +13,7 @@ export const zodValidateDateOrTimestamp = () => {
     }, { message: "Invalid date format. Must be a Date or Firestore Timestamp" })
 }
 
-export const validateSchemaObject = <T>(schema: z.ZodSchema, data: unknown): T => {
+export const validateSchemaObject = <T extends z.ZodTypeAny>(schema: z.ZodSchema, data: unknown): z.infer<T> => {
     const parsedResult = schema.safeParse(data)
 
     if (!parsedResult.success) {

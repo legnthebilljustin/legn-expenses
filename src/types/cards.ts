@@ -1,6 +1,4 @@
 import { CARD_STATEMENT_PAYMENT_STATUS, CARDS_FETCH_TYPE } from "@/constants/others"
-import { Timestamp } from "firebase/firestore/lite"
-
 export type CardForDropdownType = {
     id: string
     name: string
@@ -31,12 +29,6 @@ export type CardPayment = {
     billingDate: string
     amountPaid: number
     createdAt: string
-}
-
-export type FirestoreCardStatement = {
-    billingDate: Timestamp
-    dueDate: Timestamp
-    status: number
 }
 
 export type CardPaymentStatus = typeof CARD_STATEMENT_PAYMENT_STATUS[keyof typeof CARD_STATEMENT_PAYMENT_STATUS]

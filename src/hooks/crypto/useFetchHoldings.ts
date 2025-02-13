@@ -33,13 +33,9 @@ export const useFetchHoldings = () => {
             }
 
             try {
-                const { success, data, error, errorCode } = await getHoldings(userUid);
+                const holdings = await getHoldings(userUid)
 
-                if (!success) {
-                    throw new Error(JSON.stringify({ error, errorCode }));
-                }
-
-                const processedAssets = data.map((doc: QueryDocumentSnapshot) => {
+                const processedAssets = holdings.map((doc: QueryDocumentSnapshot) => {
                     const parsedData = CryptoHoldingSchema.safeParse(doc.data());
                     if (!parsedData.success) {
                         // TODO: error logger here 
@@ -67,12 +63,11 @@ export const useFetchHoldings = () => {
 
                 setHoldingsList(processedAssets.filter(Boolean) as AssetTableItemType[]);
 
-            } catch (err: any) {
-                const { error, errorCode } = JSON.parse(err.message);
+            } catch (error: any) {
                 dispatch(
                     setErrorDetails({
-                        message: error || "An unexpected error occurred.",
-                        code: errorCode || 500,
+                        message: error?.message || "Something went wrong. Unable to get holdings.",
+                        code: error?.code || 500,
                     })
                 );
                 dispatch(openErrorModal());
