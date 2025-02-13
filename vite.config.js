@@ -17,6 +17,8 @@ export default defineConfig({
             "@state": "/src/state",
             "@utils": "/src/utils",
             "@types": "/src/types",
+            "@schema": "/src/schema",
+            "@features": "/src/features",
         },
     },
     plugins: [react()],
