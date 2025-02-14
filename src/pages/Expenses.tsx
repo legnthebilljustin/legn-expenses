@@ -1,4 +1,4 @@
-import { AddExpenses, ExpensesDashboard, ExpensesList } from "@/components";
+import { AddExpenses, ExpensesDashboard, ExpensesList } from "@/features";
 import { Tab, Tabs } from "@nextui-org/react";
 import { ReactNode, useState } from "react";
 

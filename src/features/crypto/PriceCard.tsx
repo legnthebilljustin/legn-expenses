@@ -1,8 +1,8 @@
 import { Card, CardBody } from "@nextui-org/react";
-import CryptoCodeChip from "../shared/CryptoCodeChip";
 import { convertToCurrency } from "@/utils/currency";
 import { DOLLAR_SYMBOL } from "@/constants/others";
 import PNLIndicator from "./PNLIndicator";
+import { CryptoCodeChip } from "@/components";
 
 type Props = {
     code: string

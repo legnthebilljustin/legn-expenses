@@ -1,9 +1,9 @@
 import { useGetExpensesMetrics } from "@/hooks"
-import MetricsCard from "../dashboard/MetricsCard"
 import { Spinner, Table, TableBody, TableHeader, TableCell, TableColumn, TableRow } from "@nextui-org/react"
 import { MonthlyExpensesListType } from "@/types/overviews"
 import { convertToCurrency } from "@/utils/currency"
 import { PESO_SYMBOL } from "@/constants/others"
+import { MetricsCard } from "@/components"
 
 export default function ExpensesDashboard() {
     const {

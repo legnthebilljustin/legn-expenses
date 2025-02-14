@@ -1,8 +1,8 @@
 import { EditExpensesDetailsType, ExpensesItemType } from "@/types/expenses"
 import { convertToCurrency } from "@/utils/currency"
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react"
-import PaymentTypeChip from "../shared/PaymentTypeChip"
 import { PESO_SYMBOL } from "@/constants/others"
+import { PaymentTypeChip } from "@/components"
 
 const columns = [
     { key: "item", label: "item" },
