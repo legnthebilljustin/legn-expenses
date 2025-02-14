@@ -22,7 +22,7 @@ export default function AddExpenses() {
 
     return (
         <div>
-            <div className="mb-2 mt-6">Please select a date to start adding items.</div>
+            <div className="mb-2 text-sm text-default-500 mt-6">Please select a date to start adding items.</div>
             <DatePicker label="Purchase Date" size="sm"
                 className="max-w-[300px] mb-8"
                 isRequired name="purchaseDate"
