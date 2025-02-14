@@ -5,25 +5,20 @@ import { Chip } from "@nextui-org/react"
 export type PaymentType = typeof PAYMENT_METHODS_ENUMS[keyof typeof PAYMENT_METHODS_ENUMS]
 
 type Props = {
-    paymentType: PaymentType | string
-    card: ExpensesCardInfoType
+    card: ExpensesCardInfoType | null
 }
 
-export default function PaymentTypeChip({ paymentType, card }: Props) {
-
-    if (paymentType === PAYMENT_METHODS_ENUMS.CASH) {
-        return <Chip className="text-white-500 min-w-[120px]" size="sm" radius="sm">Cash</Chip>
-    }
-
+export default function PaymentTypeChip({ card }: Props) {
     return <Chip size="sm" radius="sm"
                 className="text-white-500 truncate"
                 style={{ 
-                    backgroundColor: card.color || "transparent",
-                    width: 120
+                    color: card?.color || "white",
+                    width: 120,
+                    backgroundColor: "#262626"
                 }}
-            >
-                <div className="max-w-[120px] min-w-[120px] truncate">
-                    { card?.name || "Card" }
+            > 
+                <div className="w-[120px] truncate">
+                    { card?.name || "Cash" }
                 </div>
             </Chip>
 }
