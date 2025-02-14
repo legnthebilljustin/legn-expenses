@@ -15,7 +15,9 @@
 			"pages/*": ["pages/*"],
 			"state/*": ["state/*"],
 			"utils/*": ["utils/*"],
-			"types/*": ["types/*"]
+			"types/*": ["types/*"],
+			"features/*": ["features/*"],
+			"schema/*": ["schema/*"],
 		},
 
 		"target": "ES2020",

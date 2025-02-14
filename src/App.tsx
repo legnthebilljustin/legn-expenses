@@ -1,6 +1,6 @@
 
 import { NotificationModal, NavigationBar, ConfirmActionModal } from "./components"
-import ErrorModal from "./components/shared/ErrorModal"
+import ErrorModal from "./components/ErrorModal"
 import { Outlet, useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 

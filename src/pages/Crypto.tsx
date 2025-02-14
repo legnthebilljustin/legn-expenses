@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react"
-import { CryptoDashboard, CryptoHoldings } from "@/components"
 import { Tab, Tabs } from "@nextui-org/react"
+import { CryptoDashboard, CryptoHoldings } from "@/features"
 
 const CRYPTO_TABS = {
     DASHBOARD: "dashboard",

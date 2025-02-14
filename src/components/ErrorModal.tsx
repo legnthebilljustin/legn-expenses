@@ -1,6 +1,6 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { useDispatch, useSelector } from "react-redux";
-import { closeErrorModal } from "../../state/errorSlice";
+import { closeErrorModal } from "../state/errorSlice";
 import { RootState } from "@/state/store";
 
 export default function ErrorModal() {
