@@ -1,6 +1,6 @@
 import { editExpensesItem } from "@/apis/expenses"
 import { useExpenses } from "@/context/ExpensesContext"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { RootState } from "@/state/store"
 import { EditExpensesDetailsType, ExpensesItemType } from "@/types/expenses"
@@ -39,11 +39,11 @@ export const useEditExpenses = (expensesItem: EditExpensesDetailsType) => {
             dispatch(openNotification())
             
         } catch (error: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error?.message || "Unable to update item. Something went wrong.",
                 code: error?.code || 400
             }))
-            dispatch(openErrorModal())
+            
         } finally {
             setIsEditSubmitted(false)
         }

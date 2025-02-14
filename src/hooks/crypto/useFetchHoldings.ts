@@ -1,7 +1,7 @@
 
 import { getHoldings } from "@/apis/crypto"
 import { CryptoHoldingSchema } from "@/schema/cryptoHoldingSchema"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { RootState } from "@/state/store"
 import { AssetTableItemType, CryptoWithPriceType, UnrealizedPNLType } from "@/types/crypto"
 import { QueryDocumentSnapshot } from "firebase/firestore/lite"
@@ -65,12 +65,12 @@ export const useFetchHoldings = () => {
 
             } catch (error: any) {
                 dispatch(
-                    setErrorDetails({
+                    openErrorModal({
                         message: error?.message || "Something went wrong. Unable to get holdings.",
                         code: error?.code || 500,
                     })
                 );
-                dispatch(openErrorModal());
+                ;
             } finally {
                 setIsFetching(false);
             }

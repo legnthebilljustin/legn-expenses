@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { CardPaymentStatus, CardWithStatementType, CardsFetchType, CardForDropdownType } from "@/types/cards"
 import { RootState } from "@/state/store"
 import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore/lite"
@@ -40,11 +40,11 @@ export const useFetchCards = (cardFetchType: CardsFetchType) => {
 
             return cards
         } catch (error: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error?.message || "Something went wrong. Unable to fetch your cards.",
                 code: error?.code || 500
             }))
-            dispatch(openErrorModal())
+            
         }
     }
 

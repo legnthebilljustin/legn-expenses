@@ -21,15 +21,7 @@ const errorSlice = createSlice({
     name: "error",
     initialState,
     reducers: {
-        openErrorModal: state => {
-            state.isOpen = true
-        },
-        closeErrorModal: state => {
-            state.isOpen = false
-            state.message = undefined
-            state.code = undefined
-        },
-        setErrorDetails: (state, action: PayloadAction<ErrorPayloadType>) => {
+        openErrorModal: (state, action: PayloadAction<ErrorPayloadType>) => {
             const { message, code } = action.payload
 
             if (!message || !code) {
@@ -38,9 +30,15 @@ const errorSlice = createSlice({
 
             state.message = message
             state.code = code
-        }
+            state.isOpen = true
+        },
+        closeErrorModal: state => {
+            state.isOpen = false
+            state.message = undefined
+            state.code = undefined
+        },
     }
 })
 
-export const { openErrorModal, closeErrorModal, setErrorDetails } = errorSlice.actions
+export const { openErrorModal, closeErrorModal } = errorSlice.actions
 export default errorSlice.reducer

@@ -2,7 +2,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react"
 import { CalendarDate } from "@nextui-org/react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { openErrorModal, setErrorDetails } from "@/state/errorSlice"
+import { openErrorModal } from "@/state/errorSlice"
 import { openNotification, setNotificationMessage } from "@/state/notificationSlice"
 import { createOverview, getOverviewDocument, updateOverview } from "@/apis/overview"
 import { addExpensesAPI } from "@/apis/expenses"
@@ -154,11 +154,11 @@ export const useAddExpenses = ({ creditCardsList }: Props) => {
             setFormData([])
             setPurchaseDate(null)
         } catch (error: any) {
-            dispatch(setErrorDetails({
+            dispatch(openErrorModal({
                 message: error.message || "Something went wrong. Cannot add new expenses.",
                 code: 400
             }))
-            dispatch(openErrorModal())
+            
         } finally {
             setIsSubmittingForm(false)
         }
