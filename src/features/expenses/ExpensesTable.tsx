@@ -34,9 +34,7 @@ export default function ExpensesTable({ expenses, onEditExpenseItem, onDeleteIte
                 <TableRow key={item.id}>
                     <TableCell width="50%">{ item.itemName }</TableCell>
                     <TableCell>
-                        <PaymentTypeChip paymentType={item.paymentMethod} 
-                            card={item.card} 
-                        />
+                        <PaymentTypeChip card={item.card} />
                     </TableCell>
                     <TableCell width="20%">{ convertToCurrency(item.price, PESO_SYMBOL) }</TableCell>
                     <TableCell width="10%">
