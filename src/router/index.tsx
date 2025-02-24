@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import { Cards, Crypto, Dashboard, Expenses, Login, Register, Unauthorized } from "@/pages";
+import { Cards, Crypto, Dashboard, Expenses, Login, Register, Unauthenticated, Unauthorized } from "@/pages";
 import { ProtectedRoute } from "@/components";
 
 const router = createBrowserRouter([
@@ -38,6 +38,10 @@ const router = createBrowserRouter([
     {
         path: "/403",
         element: <Unauthorized />
+    },
+    {
+        path: "/401",
+        element: <Unauthenticated />
     }
 ])
 
