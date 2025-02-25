@@ -4,7 +4,8 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth"
 const AUTHORIZATION_KEY = "Authorization"
 
 
-const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080/api" : ""
+const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8080/api" 
+  : "https://legn-api-ts-912126483384.us-central1.run.app/api"
 
 const api = axios.create({
     baseURL: API_URL
